@@ -57,10 +57,13 @@ void Terminal::readData() {
         lines.push_back(line.trimmed());
     }
 
-    bool scrollEnd = verticalScrollBar()->value() == verticalScrollBar()->maximum();
+    int scrollPos = verticalScrollBar()->value();
+    bool scrollEnd = scrollPos == verticalScrollBar()->maximum();
     updateTerminal();
     if(scrollEnd)
         verticalScrollBar()->setValue(verticalScrollBar()->maximum());
+    else
+        verticalScrollBar()->setValue(scrollPos);
 }
 
 void Terminal::updateTerminal() {
