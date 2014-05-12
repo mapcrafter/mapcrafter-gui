@@ -12,9 +12,8 @@ TARGET = mapcrafter-simplegui
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp
+SOURCES += main.cpp mainwindow.cpp terminal.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h terminal.h
 
 FORMS    += mainwindow.ui
