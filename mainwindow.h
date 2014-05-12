@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QCloseEvent>
 #include <QMainWindow>
 #include <QSplitter>
 
@@ -26,7 +27,13 @@ public slots:
 
     void handleTextChanged();
 
+protected:
+    void closeEvent(QCloseEvent *event);
+
 private:
+    void readSettings();
+    void writeSettings();
+
     Ui::MainWindow *ui;
 
     QString filename, filenameShort;

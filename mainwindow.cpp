@@ -16,8 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QSettings settings;
-    ui->mapcrafterPath->setText(settings.value("mapcrafterPath", "").toString());
+    readSettings();
 
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(handleActionOpen()));
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(handleActionSave()));
@@ -99,9 +98,6 @@ void MainWindow::handleButtonMapcrafterPath() {
     }
 
     ui->mapcrafterPath->setText(filename);
-
-    QSettings settings;
-    settings.setValue("mapcrafterPath", filename);
 }
 
 void MainWindow::handleButtonRender()
@@ -129,4 +125,29 @@ void MainWindow::handleTextChanged()
         setWindowTitle("Empty file*");
     else
         setWindowTitle(filenameShort + "*");
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    writeSettings();
+}
+
+void MainWindow::readSettings()
+{
+    QSettings settings;
+
+    ui->mapcrafterPath->setText(settings.value("mapcrafterPath", "").toString());
+
+    restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
+    restoreState(settings.value("MainWindow/windowState").toByteArray());
+}
+
+void MainWindow::writeSettings()
+{
+    QSettings settings;
+
+    settings.setValue("mapcrafterPath", ui->mapcrafterPath->text());
+
+    settings.setValue("MainWindow/geometry", saveGeometry());
+    settings.setValue("MainWindow/windowState", saveState());
 }
