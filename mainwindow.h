@@ -21,6 +21,7 @@ public slots:
     void handleActionSave();
     void handleActionSaveAs();
 
+    void handleButtonMapcrafterPath();
     void handleButtonRender();
 
     void handleTextChanged();

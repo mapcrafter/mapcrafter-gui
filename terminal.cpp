@@ -1,6 +1,7 @@
 #include "terminal.h"
 
 #include <QDebug>
+#include <QScrollBar>
 
 Terminal::Terminal(QWidget *parent) :
     QTextEdit(parent), process(NULL) {
@@ -40,8 +41,9 @@ void Terminal::readData() {
     for(int i = 0; i < lines_read.size(); i++) {
         QString line = lines_read[i];
         //qDebug() << line << i+1 << "/" << lines_read.size();
-        if(line.startsWith("\033[K") && lines.size() != 0) {
-            lines[lines.size() - 1] = line.replace("\033[K", "");
+        /*
+        if(line.startsWith("\r") && lines.size() != 0) {
+            lines[lines.size() - 1] = line.replace("\r", "");
             last_changed = true;
         } else {
             if(last_changed)
@@ -51,9 +53,14 @@ void Terminal::readData() {
                 lines.append("");
             last_changed = false;
         }
+        */
+        lines.push_back(line.trimmed());
     }
 
+    bool scrollEnd = verticalScrollBar()->value() == verticalScrollBar()->maximum();
     updateTerminal();
+    if(scrollEnd)
+        verticalScrollBar()->setValue(verticalScrollBar()->maximum());
 }
 
 void Terminal::updateTerminal() {
