@@ -22,9 +22,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(handleActionSave()));
     connect(ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(handleActionSaveAs()));
 
-    connect(ui->buttonMapcrafterPath, SIGNAL(clicked()), this, SLOT(handleButtonMapcrafterPath()));
-    connect(ui->buttonRender, SIGNAL(clicked()), this, SLOT(handleButtonRender()));
-
     connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(handleTextChanged()));
 }
 
@@ -86,39 +83,6 @@ void MainWindow::handleActionSaveAs()
     setWindowTitle(filenameShort);
 }
 
-void MainWindow::handleButtonMapcrafterPath() {
-    QString filename = QFileDialog::getOpenFileName(this, "Path to Mapcrafter executable");
-    if(filename.isEmpty())
-        return;
-
-    QFileInfo info(filename);
-    if(!info.isExecutable()) {
-        QMessageBox::critical(this, "Error", "The Mapcrafter executable file must be executable!");
-        return;
-    }
-
-    ui->mapcrafterPath->setText(filename);
-}
-
-void MainWindow::handleButtonRender()
-{
-    if(filename.isEmpty()) {
-        QMessageBox::critical(this, "Error", "You have to save the configuration file before you can render it!");
-        return;
-    }
-
-    if(ui->mapcrafterPath->text().isEmpty()) {
-        QMessageBox::critical(this, "Error", "You have to specify a path to the Mapcrafter executable!");
-        return;
-    }
-
-    QStringList args;
-    args << "-c" << filename;
-    args << "-j" << QString::number(ui->threads->value());
-    args << ui->additionalOptions->text().split(" ");
-    ui->terminal->start(ui->mapcrafterPath->text(), args);
-}
-
 void MainWindow::handleTextChanged()
 {
     if(this->filename.isEmpty())
@@ -136,8 +100,6 @@ void MainWindow::readSettings()
 {
     QSettings settings;
 
-    ui->mapcrafterPath->setText(settings.value("mapcrafterPath", "").toString());
-
     restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
     restoreState(settings.value("MainWindow/windowState").toByteArray());
 }
@@ -145,8 +107,6 @@ void MainWindow::readSettings()
 void MainWindow::writeSettings()
 {
     QSettings settings;
-
-    settings.setValue("mapcrafterPath", ui->mapcrafterPath->text());
 
     settings.setValue("MainWindow/geometry", saveGeometry());
     settings.setValue("MainWindow/windowState", saveState());

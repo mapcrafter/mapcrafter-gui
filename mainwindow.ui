@@ -34,65 +34,8 @@
           </property>
          </widget>
         </item>
-        <item>
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Mapcrafter executable:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>Additional options:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QSpinBox" name="threads">
-            <property name="minimum">
-             <number>1</number>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="3">
-           <widget class="QPushButton" name="buttonMapcrafterPath">
-            <property name="text">
-             <string>Search...</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>Threads to use:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLineEdit" name="mapcrafterPath"/>
-          </item>
-          <item row="2" column="2">
-           <widget class="QLineEdit" name="additionalOptions"/>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="layoutControlButtons">
-          <item>
-           <widget class="QPushButton" name="buttonRender">
-            <property name="text">
-             <string>Render</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
        </layout>
       </widget>
-      <widget class="Terminal" name="terminal"/>
      </widget>
     </item>
    </layout>
@@ -148,13 +91,6 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>Terminal</class>
-   <extends>QTextEdit</extends>
-   <header>terminal.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>
