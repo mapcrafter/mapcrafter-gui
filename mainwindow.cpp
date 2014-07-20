@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <mapcraftercore/version.h>
+
 #include <QDebug>
 #include <QFile>
 #include <QFileDialog>
@@ -21,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(handleActionOpen()));
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(handleActionSave()));
     connect(ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(handleActionSaveAs()));
+    connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(handleActionAbout()));
 
     connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(handleTextChanged()));
 }
@@ -81,6 +84,16 @@ void MainWindow::handleActionSaveAs()
     file.close();
 
     setWindowTitle(filenameShort);
+}
+
+void MainWindow::handleActionAbout() {
+    QString text;
+    text += "Mapcrafter GUI version: " + QCoreApplication::applicationVersion() + "<br />";
+    text += QString("Mapcrafter version: ") + mapcrafter::MAPCRAFTER_VERSION;
+    if(!QString(mapcrafter::MAPCRAFTER_GITVERSION).isEmpty())
+        text += QString(" (") + mapcrafter::MAPCRAFTER_GITVERSION + ")";
+    text += "<br />";
+    QMessageBox::information(this, "About", text);
 }
 
 void MainWindow::handleTextChanged()

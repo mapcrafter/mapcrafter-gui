@@ -21,6 +21,7 @@ public slots:
     void handleActionOpen();
     void handleActionSave();
     void handleActionSaveAs();
+    void handleActionAbout();
 
     void handleTextChanged();
 

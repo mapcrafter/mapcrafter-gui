@@ -17,3 +17,6 @@ SOURCES += main.cpp mainwindow.cpp
 HEADERS  += mainwindow.h
 
 FORMS    += mainwindow.ui
+
+LIBS += -L /home/moritz/dev/minecraft/mapcrafter/src/mapcraftercore -l mapcraftercore
+INCLUDEPATH += /home/moritz/dev/minecraft/mapcrafter/src
