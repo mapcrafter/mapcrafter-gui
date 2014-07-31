@@ -25,6 +25,8 @@ public slots:
 
     void handleTextChanged();
 
+    void handleValidateConfig();
+
 protected:
     void closeEvent(QCloseEvent *event);
 
