@@ -18,5 +18,7 @@ HEADERS  += mainwindow.h
 
 FORMS    += mainwindow.ui
 
-LIBS += -L /home/moritz/dev/minecraft/mapcrafter/src/mapcraftercore -l mapcraftercore
-INCLUDEPATH += /home/moritz/dev/minecraft/mapcrafter/src
+LIBS += -L ../mapcrafter/src/mapcraftercore -l mapcraftercore
+INCLUDEPATH += ../mapcrafter/src
+
+QMAKE_CXXFLAGS += -std=c++11
