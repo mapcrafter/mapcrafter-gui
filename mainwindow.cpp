@@ -4,6 +4,7 @@
 #include <mapcraftercore/version.h>
 #include <mapcraftercore/config/mapcrafterconfig.h>
 
+#include <sstream>
 #include <QDebug>
 #include <QFile>
 #include <QFileDialog>
@@ -13,6 +14,9 @@
 #include <QSettings>
 #include <QStringList>
 #include <QTextStream>
+#include <boost/filesystem.hpp>
+
+namespace fs = boost::filesystem;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -103,13 +107,49 @@ void MainWindow::handleActionSaveAs()
 
 void MainWindow::handleActionAbout()
 {
-    QString text;
-    text += "Mapcrafter GUI version: " + QCoreApplication::applicationVersion() + "<br />";
-    text += QString("Mapcrafter version: ") + mapcrafter::MAPCRAFTER_VERSION;
+    std::stringstream stream;
+    stream << "<b>Mapcrafter GUI version:</b> " << QCoreApplication::applicationVersion().toStdString() << "<br />";
+    stream << "<b>Mapcrafter version:</b> " << mapcrafter::MAPCRAFTER_VERSION;
     if(!QString(mapcrafter::MAPCRAFTER_GITVERSION).isEmpty())
-        text += QString(" (") + mapcrafter::MAPCRAFTER_GITVERSION + ")";
-    text += "<br />";
-    QMessageBox::information(this, "About", text);
+        stream << " (" << mapcrafter::MAPCRAFTER_GITVERSION << ")";
+    stream << "<br /><br />";
+
+    fs::path mapcrafter_bin = mapcrafter::util::findExecutablePath();
+    stream << "<b>Your home directory:</b> " << mapcrafter::util::findHomeDir().string().c_str() << "<br />";
+    stream << "<b>Mapcrafter binary:</b> " << mapcrafter_bin.string().c_str() << "<br /><br />";
+
+    mapcrafter::util::PathList resources = mapcrafter::util::findResourceDirs(mapcrafter_bin);
+    stream << "<b>Resource directories:</b><ol>";
+    for (size_t i = 0; i < resources.size(); i++)
+        stream << "<li>" << BOOST_FS_ABSOLUTE1(resources[i]).string().c_str() << "</li>";
+    if (resources.size() == 0)
+        stream << "<li>Nothing found.</li>";
+    stream << "</ol>";
+
+    mapcrafter::util::PathList templates = mapcrafter::util::findTemplateDirs(mapcrafter_bin);
+    stream << "<b>Template directories:</b><ol>";
+    for (size_t i = 0; i < templates.size(); i++)
+        stream << "<li>" << BOOST_FS_ABSOLUTE1(templates[i]).string().c_str() << "</li>";
+    if (templates.size() == 0)
+        stream << "<li>Nothing found.</li>";
+    stream << "</ol>";
+
+    mapcrafter::util::PathList textures = mapcrafter::util::findTextureDirs(mapcrafter_bin);
+    stream << "<b>Texture directories:</b><ol>";
+    for (size_t i = 0; i < textures.size(); i++)
+        stream << "<li>" << BOOST_FS_ABSOLUTE1(textures[i]).string().c_str() << "</li>";
+    if (textures.size() == 0)
+        stream << "<li>Nothing found.</li>";
+    stream << "</ol>";
+
+    mapcrafter::util::PathList configs = mapcrafter::util::findLoggingConfigFiles(mapcrafter_bin);
+    stream << "<b>Logging configuration file:</b><ol>";
+    for (size_t i = 0; i < configs.size(); i++)
+        stream << "<li>" << BOOST_FS_ABSOLUTE1(configs[i]).string().c_str() << "</li>";
+    if (configs.size() == 0)
+        stream << "<li>Nothing found.</li>";
+    stream << "</ol>";
+    QMessageBox::information(this, "About", stream.str().c_str());
 }
 
 void MainWindow::handleTextChanged()
@@ -123,32 +163,10 @@ void MainWindow::handleTextChanged()
 void MainWindow::handleValidateConfig()
 {
     mapcrafter::config::MapcrafterConfig config;
-    mapcrafter::config::ValidationMap validation;
-    bool ok = config.parse(filename.toStdString(), validation);
+    mapcrafter::config::ValidationMap validation = config.parse(filename.toStdString());
     validation.log();
 
-    ui->treeWidget->clear();
-    auto sections = validation.getSections();
-    for (auto section_it = sections.begin(); section_it != sections.end(); ++section_it) {
-        auto messages = section_it->second.getMessages();
-        if (messages.empty())
-            continue;
-        QTreeWidgetItem* item = new QTreeWidgetItem(ui->treeWidget);
-        item->setText(0, QString::fromStdString(section_it->first));
-        item->setExpanded(true);
-        for (auto message_it = messages.begin(); message_it != messages.end(); ++message_it) {
-            QTreeWidgetItem* other_item = new QTreeWidgetItem;
-            QString icon = "dialog-information";
-            if (message_it->getType() == mapcrafter::config::ValidationMessage::ERROR)
-                icon = "dialog-error";
-            else if (message_it->getType() == mapcrafter::config::ValidationMessage::WARNING)
-                icon = "dialog-warning";
-            other_item->setIcon(0, QIcon::fromTheme(icon));
-            other_item->setText(0, QString::fromStdString(message_it->getMessage()));
-            item->addChild(other_item);
-        }
-        ui->treeWidget->addTopLevelItem(item);
-    }
+    ui->validationWidget->setValidation(validation);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

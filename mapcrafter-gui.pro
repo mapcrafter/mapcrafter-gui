@@ -12,13 +12,15 @@ TARGET = mapcrafter-gui
 TEMPLATE = app
 
 
-SOURCES += main.cpp mainwindow.cpp
+SOURCES += main.cpp mainwindow.cpp \
+    validationwidget.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    validationwidget.h
 
 FORMS    += mainwindow.ui
 
-LIBS += -L ../mapcrafter/src/mapcraftercore -l mapcraftercore
+LIBS += -L ../mapcrafter/src/mapcraftercore -l mapcraftercore -lboost_system -lboost_filesystem
 INCLUDEPATH += ../mapcrafter/src
 
 QMAKE_CXXFLAGS += -std=c++11

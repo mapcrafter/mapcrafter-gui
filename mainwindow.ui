@@ -30,7 +30,10 @@
         <bool>false</bool>
        </property>
       </widget>
-      <widget class="QTreeWidget" name="treeWidget">
+      <widget class="ValidationWidget" name="validationWidget">
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
        <column>
         <property name="text">
          <string notr="true">1</string>
@@ -107,6 +110,13 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>ValidationWidget</class>
+   <extends>QTreeWidget</extends>
+   <header>validationwidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
