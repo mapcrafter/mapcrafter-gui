@@ -34,17 +34,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(handleTextChanged()));
 
     connect(ui->buttonValidateConfig, SIGNAL(clicked()), this, SLOT(handleValidateConfig()));
-
-    QString filename = "/media/mapcrafter-projects/mapcrafter_test/world1.4.conf";
-    QFile file(filename);
-    file.open(QIODevice::ReadOnly);
-    QTextStream stream(&file);
-    ui->textEdit->setPlainText(stream.readAll());
-    file.close();
-
-    this->filename = filename;
-    this->filenameShort = QFileInfo(file).fileName();
-    setWindowTitle(filenameShort);
 }
 
 MainWindow::~MainWindow()
@@ -167,6 +156,13 @@ void MainWindow::handleValidateConfig()
     validation.log();
 
     ui->validationWidget->setValidation(validation);
+
+    if (validation.isEmpty())
+        QMessageBox::information(this, "Configuration validation", "Configuration validation was successful!");
+    else if (validation.isCritical())
+        QMessageBox::critical(this, "Configuration validation", "There are critical errors in your configuration file!");
+    else
+        QMessageBox::information(this, "Configuration validation", "Just some small things about your configuration file.");
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
