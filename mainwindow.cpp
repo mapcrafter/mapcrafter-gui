@@ -20,16 +20,18 @@ namespace fs = boost::filesystem;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    currentFile(""), currentFileDirty(false)
 {
     ui->setupUi(this);
 
     readSettings();
+    setCurrentFile("", false);
 
-    connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(handleActionOpen()));
-    connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(handleActionSave()));
-    connect(ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(handleActionSaveAs()));
-    connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(handleActionAbout()));
+    connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(open()));
+    connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(save()));
+    connect(ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(saveAs()));
+    connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
 
     connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(handleTextChanged()));
 
@@ -42,59 +44,31 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::handleActionOpen()
+void MainWindow::open()
 {
-    QString filename = QFileDialog::getOpenFileName(this, "Open config file");
+    QString filename = QFileDialog::getOpenFileName(this);
     if(filename.isEmpty())
         return;
-    QFile file(filename);
-    file.open(QIODevice::ReadOnly);
-    QTextStream stream(&file);
-    ui->textEdit->setPlainText(stream.readAll());
-    file.close();
-
-    this->filename = filename;
-    this->filenameShort = QFileInfo(file).fileName();
-    setWindowTitle(filenameShort);
+    loadFile(filename);
 }
 
-void MainWindow::handleActionSave()
+void MainWindow::save()
 {
-    if(this->filename.isEmpty()) {
-        QString filename = QFileDialog::getSaveFileName(this, "Save config file");
-        if(filename.isEmpty())
-            return;
-        this->filename = filename;
-        this->filenameShort = QFileInfo(QFile(filename)).fileName();
-    }
-
-    QFile file(filename);
-    file.open(QIODevice::WriteOnly | QIODevice::Truncate);
-    QTextStream stream(&file);
-    stream << ui->textEdit->toPlainText();
-    file.close();
-
-    setWindowTitle(filenameShort);
+    if (currentFile.isEmpty())
+        saveAs();
+    else
+        saveFile(currentFile);
 }
 
-void MainWindow::handleActionSaveAs()
+void MainWindow::saveAs()
 {
-    QString filename = QFileDialog::getSaveFileName(this, "Save as config file");
+    QString filename = QFileDialog::getSaveFileName(this);
     if(filename.isEmpty())
         return;
-    this->filename = filename;
-    this->filenameShort = QFileInfo(QFile(filename)).fileName();
-
-    QFile file(filename);
-    file.open(QIODevice::WriteOnly | QIODevice::Truncate);
-    QTextStream stream(&file);
-    stream << ui->textEdit->toPlainText();
-    file.close();
-
-    setWindowTitle(filenameShort);
+    saveFile(filename);
 }
 
-void MainWindow::handleActionAbout()
+void MainWindow::about()
 {
     std::stringstream stream;
     stream << "<b>Mapcrafter GUI version:</b> " << QCoreApplication::applicationVersion().toStdString() << "<br />";
@@ -143,31 +117,67 @@ void MainWindow::handleActionAbout()
 
 void MainWindow::handleTextChanged()
 {
-    if(this->filename.isEmpty())
-        setWindowTitle("Empty file*");
-    else
-        setWindowTitle(filenameShort + "*");
+    setCurrentFile(currentFile, true);
 }
 
 void MainWindow::handleValidateConfig()
 {
     mapcrafter::config::MapcrafterConfig config;
-    mapcrafter::config::ValidationMap validation = config.parse(filename.toStdString());
+    mapcrafter::config::ValidationMap validation = config.parse(currentFile.toStdString());
     validation.log();
 
     ui->validationWidget->setValidation(validation);
-
-    if (validation.isEmpty())
-        QMessageBox::information(this, "Configuration validation", "Configuration validation was successful!");
-    else if (validation.isCritical())
-        QMessageBox::critical(this, "Configuration validation", "There are critical errors in your configuration file!");
-    else
-        QMessageBox::information(this, "Configuration validation", "Just some small things about your configuration file.");
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    if (currentFileDirty) {
+        QMessageBox dialog(this);
+        dialog.setWindowTitle("Save file");
+        dialog.setText("Do you want to save the file?");
+        dialog.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+        dialog.setDefaultButton(QMessageBox::Yes);
+        int result = dialog.exec();
+        if (result == QMessageBox::Yes)
+            save();
+        if (result == QMessageBox::Cancel)
+            event->setAccepted(false);
+    }
     writeSettings();
+}
+
+void MainWindow::loadFile(const QString& filename)
+{
+    QFile file(filename);
+    file.open(QIODevice::ReadOnly);
+    QTextStream stream(&file);
+    ui->textEdit->setPlainText(stream.readAll());
+    file.close();
+
+    setCurrentFile(filename, false);
+}
+
+void MainWindow::saveFile(const QString& filename)
+{
+    QFile file(filename);
+    file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    QTextStream stream(&file);
+    stream << ui->textEdit->toPlainText();
+    file.close();
+
+    setCurrentFile(filename, false);
+}
+
+void MainWindow::setCurrentFile(const QString &filename, bool dirty)
+{
+    currentFile = filename;
+    currentFileDirty = dirty;
+    QString shortName = QFileInfo(QFile(filename)).fileName();
+    if (filename.isEmpty())
+        shortName = "Empty file";
+    if (dirty)
+        shortName += "*";
+    setWindowTitle(shortName + " - " + QCoreApplication::applicationName());
 }
 
 void MainWindow::readSettings()

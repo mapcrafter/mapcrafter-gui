@@ -18,10 +18,10 @@ public:
     ~MainWindow();
 
 public slots:
-    void handleActionOpen();
-    void handleActionSave();
-    void handleActionSaveAs();
-    void handleActionAbout();
+    void open();
+    void save();
+    void saveAs();
+    void about();
 
     void handleTextChanged();
 
@@ -31,12 +31,17 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 private:
+    void loadFile(const QString& filename);
+    void saveFile(const QString& filename);
+    void setCurrentFile(const QString& filename, bool dirty = false);
+
     void readSettings();
     void writeSettings();
 
     Ui::MainWindow *ui;
 
-    QString filename, filenameShort;
+    QString currentFile;
+    bool currentFileDirty;
 };
 
 #endif // MAINWINDOW_H
