@@ -172,7 +172,7 @@ void MainWindow::handleValidateConfig()
     else if (validation.isCritical())
         QMessageBox::critical(this, "Configuration validation", "Validation not successful.");
     else
-        QMessageBox::warning(this, "Configuration validatiom", "Validation successful, but some minor problems appeared.");
+        QMessageBox::warning(this, "Configuration validation", "Validation successful, but some minor problems appeared.");
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
