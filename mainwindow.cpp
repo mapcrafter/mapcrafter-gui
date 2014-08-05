@@ -36,6 +36,17 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(handleTextChanged()));
 
     connect(ui->buttonValidateConfig, SIGNAL(clicked()), this, SLOT(handleValidateConfig()));
+
+    recentFilesSeparator = new QAction(this);
+    recentFilesSeparator->setSeparator(true);
+    ui->menuFile->addAction(recentFilesSeparator);
+    for (int i = 0; i < MAX_RECENT_FILES; i++) {
+        recentFileActions[i] = new QAction(this);
+        recentFileActions[i]->setVisible(false);
+        ui->menuFile->addAction(recentFileActions[i]);
+        connect(recentFileActions[i], SIGNAL(triggered()), this, SLOT(openRecentFile()));
+    }
+    updateRecentFiles();
 }
 
 MainWindow::~MainWindow()
@@ -50,6 +61,12 @@ void MainWindow::open()
     if(filename.isEmpty())
         return;
     loadFile(filename);
+}
+
+void MainWindow::openRecentFile() {
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action)
+        loadFile(action->data().toString());
 }
 
 void MainWindow::save()
@@ -178,6 +195,34 @@ void MainWindow::setCurrentFile(const QString &filename, bool dirty)
     if (dirty)
         shortName += "*";
     setWindowTitle(shortName + " - " + QCoreApplication::applicationName());
+
+    if (filename.isEmpty())
+        return;
+
+    QSettings settings;
+    QStringList recentFiles = settings.value("recentFiles").toStringList();
+    recentFiles.removeAll(filename);
+    recentFiles.prepend(filename);
+    while (recentFiles.size() > MAX_RECENT_FILES)
+        recentFiles.removeLast();
+    settings.setValue("recentFiles", recentFiles);
+    updateRecentFiles();
+}
+
+void MainWindow::updateRecentFiles()
+{
+    QSettings settings;
+    QStringList recentFiles = settings.value("recentFiles").toStringList();
+    int numRecentFiles = qMin(recentFiles.size(), MAX_RECENT_FILES);
+    for (int i = 0; i < numRecentFiles; i++) {
+        QString text = tr("&%1 %2").arg(i + 1).arg(QFileInfo(QFile(recentFiles[i])).fileName());
+        recentFileActions[i]->setText(text);
+        recentFileActions[i]->setData(recentFiles[i]);
+        recentFileActions[i]->setVisible(true);
+    }
+    for (int j = numRecentFiles; j < MAX_RECENT_FILES; j++)
+        recentFileActions[j]->setVisible(false);
+    recentFilesSeparator->setVisible(numRecentFiles != 0);
 }
 
 void MainWindow::readSettings()
@@ -195,3 +240,5 @@ void MainWindow::writeSettings()
     settings.setValue("MainWindow/geometry", saveGeometry());
     settings.setValue("MainWindow/windowState", saveState());
 }
+
+const int MainWindow::MAX_RECENT_FILES;

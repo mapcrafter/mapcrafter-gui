@@ -19,6 +19,7 @@ public:
 
 public slots:
     void open();
+    void openRecentFile();
     void save();
     void saveAs();
     void about();
@@ -34,6 +35,7 @@ private:
     void loadFile(const QString& filename);
     void saveFile(const QString& filename);
     void setCurrentFile(const QString& filename, bool dirty = false);
+    void updateRecentFiles();
 
     void readSettings();
     void writeSettings();
@@ -42,6 +44,10 @@ private:
 
     QString currentFile;
     bool currentFileDirty;
+
+    static const int MAX_RECENT_FILES = 5;
+    QAction* recentFilesSeparator;
+    QAction* recentFileActions[MAX_RECENT_FILES];
 };
 
 #endif // MAINWINDOW_H
