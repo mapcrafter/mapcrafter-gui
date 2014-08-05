@@ -9,6 +9,7 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QFont>
 #include <QIcon>
 #include <QMessageBox>
 #include <QSettings>
@@ -27,6 +28,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     readSettings();
     setCurrentFile("", false);
+
+    QFont font("Monospace");
+    font.setStyleHint(QFont::TypeWriter);
+    ui->textEdit->setFont(font);
 
     connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(newFile()));
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(open()));
@@ -161,6 +166,13 @@ void MainWindow::handleValidateConfig()
     validation.log();
 
     ui->validationWidget->setValidation(validation);
+
+    if (validation.isEmpty())
+        QMessageBox::information(this, "Configuration validation", "Validation successful.");
+    else if (validation.isCritical())
+        QMessageBox::critical(this, "Configuration validation", "Validation not successful.");
+    else
+        QMessageBox::warning(this, "Configuration validatiom", "Validation successful, but some minor problems appeared.");
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

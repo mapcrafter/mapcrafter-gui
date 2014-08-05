@@ -21,11 +21,6 @@
        <enum>Qt::Vertical</enum>
       </property>
       <widget class="QTextEdit" name="textEdit">
-       <property name="font">
-        <font>
-         <family>Monospace</family>
-        </font>
-       </property>
        <property name="acceptRichText">
         <bool>false</bool>
        </property>
@@ -47,7 +42,7 @@
       <item>
        <widget class="QPushButton" name="buttonValidateConfig">
         <property name="text">
-         <string>Validate config</string>
+         <string>Validate configuration</string>
         </property>
        </widget>
       </item>
