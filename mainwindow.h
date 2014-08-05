@@ -18,6 +18,7 @@ public:
     ~MainWindow();
 
 public slots:
+    void newFile();
     void open();
     void openRecentFile();
     void save();

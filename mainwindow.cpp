@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     readSettings();
     setCurrentFile("", false);
 
+    connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(newFile()));
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(open()));
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(save()));
     connect(ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(saveAs()));
@@ -54,6 +55,22 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::newFile() {
+    if (currentFileDirty) {
+        QMessageBox dialog(this);
+        dialog.setWindowTitle("Save file");
+        dialog.setText("Do you want to save the file?");
+        dialog.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+        dialog.setDefaultButton(QMessageBox::Yes);
+        int result = dialog.exec();
+        if (result == QMessageBox::Yes)
+            save();
+        if (result == QMessageBox::Cancel)
+            return;
+    }
+    ui->textEdit->setText("");
+    setCurrentFile("", false);
+}
 
 void MainWindow::open()
 {
