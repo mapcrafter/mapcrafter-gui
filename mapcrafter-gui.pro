@@ -20,7 +20,13 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
-LIBS += -L ../mapcrafter/src/mapcraftercore -l mapcraftercore -lboost_system -lboost_filesystem
+LIBS += -L ../mapcrafter/build/src/mapcraftercore -l mapcraftercore 
 INCLUDEPATH += ../mapcrafter/src
 
-QMAKE_CXXFLAGS += -std=c++11
+win32 {
+	LIBS += -L ../lib/boost_1_54_0/stage/lib -l boost_system-mgw49-mt-1_54 -l boost_filesystem-mgw49-mt-1_54
+	INCLUDEPATH += ../lib/boost_1_54_0
+}
+
+QMAKE_CXXFLAGS += -std=c++0x
+
