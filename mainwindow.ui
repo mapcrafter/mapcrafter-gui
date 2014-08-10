@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>791</width>
-    <height>605</height>
+    <width>801</width>
+    <height>615</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Empty file</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QSplitter" name="splitter">
       <property name="orientation">
@@ -25,28 +25,49 @@
         <bool>false</bool>
        </property>
       </widget>
-      <widget class="ValidationWidget" name="validationWidget">
-       <attribute name="headerVisible">
-        <bool>false</bool>
-       </attribute>
-       <column>
-        <property name="text">
-         <string notr="true">1</string>
+      <widget class="QTabWidget" name="tabWidget">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="tabConfiguration">
+        <attribute name="title">
+         <string>Configuration validation</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="ValidationWidget" name="validationWidget">
+           <attribute name="headerVisible">
+            <bool>false</bool>
+           </attribute>
+           <column>
+            <property name="text">
+             <string notr="true">1</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="buttonValidateConfig">
+           <property name="text">
+            <string>Validate configuration</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabRendering">
+        <property name="enabled">
+         <bool>false</bool>
         </property>
-       </column>
+        <attribute name="title">
+         <string>Rendering</string>
+        </attribute>
+       </widget>
       </widget>
      </widget>
-    </item>
-    <item>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QPushButton" name="buttonValidateConfig">
-        <property name="text">
-         <string>Validate configuration</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
     </item>
    </layout>
   </widget>
@@ -55,7 +76,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>791</width>
+     <width>801</width>
      <height>25</height>
     </rect>
    </property>

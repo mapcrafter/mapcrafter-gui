@@ -260,6 +260,7 @@ void MainWindow::readSettings()
 
     restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
     restoreState(settings.value("MainWindow/windowState").toByteArray());
+    ui->splitter->restoreState(settings.value("MainWindow/splitterState").toByteArray());
 }
 
 void MainWindow::writeSettings()
@@ -268,6 +269,7 @@ void MainWindow::writeSettings()
 
     settings.setValue("MainWindow/geometry", saveGeometry());
     settings.setValue("MainWindow/windowState", saveState());
+    settings.setValue("MainWindow/splitterState", ui->splitter->saveState());
 }
 
 const int MainWindow::MAX_RECENT_FILES;
