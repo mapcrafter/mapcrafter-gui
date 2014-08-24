@@ -24,7 +24,7 @@ LIBS += -L ../src/mapcraftercore -l mapcraftercore
 INCLUDEPATH += ../src
 
 win32 {
-	LIBS += -l boost-system-mt -l boost-filesystem-mt
+	LIBS += -l boost_system-mt -l boost_filesystem-mt
 #	LIBS += -L ../lib/boost_1_54_0/stage/lib -l boost_system-mgw49-mt-1_54 -l boost_filesystem-mgw49-mt-1_54
 #	INCLUDEPATH += ../lib/boost_1_54_0
 }
