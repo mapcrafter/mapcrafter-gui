@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "inisyntaxhighlighter.h"
 
 #include <mapcraftercore/version.h>
 #include <mapcraftercore/config/mapcrafterconfig.h>
@@ -32,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
     ui->textEdit->setFont(font);
+    INISyntaxHighlighter* highlighter = new INISyntaxHighlighter(ui->textEdit->document());
 
     connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(newFile()));
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(open()));
