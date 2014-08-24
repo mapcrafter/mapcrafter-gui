@@ -30,7 +30,7 @@
         <bool>true</bool>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tabConfiguration">
         <attribute name="title">
@@ -277,6 +277,21 @@
    <header>validationwidget.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>textEdit</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>validationWidget</tabstop>
+  <tabstop>buttonValidateConfig</tabstop>
+  <tabstop>mapcrafterCommand</tabstop>
+  <tabstop>customMapcrafterBinary</tabstop>
+  <tabstop>mapcrafterBinary</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>threads</tabstop>
+  <tabstop>mapsSkipAll</tabstop>
+  <tabstop>mapsSkip</tabstop>
+  <tabstop>mapsAuto</tabstop>
+  <tabstop>mapsForce</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
