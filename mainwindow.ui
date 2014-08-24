@@ -30,7 +30,7 @@
         <bool>true</bool>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="tabConfiguration">
         <attribute name="title">
@@ -157,7 +157,7 @@
             </layout>
            </item>
            <item row="0" column="0">
-            <widget class="QCheckBox" name="customMapcrafterBinaryEnabled">
+            <widget class="QCheckBox" name="customMapcrafterBinary">
              <property name="text">
               <string>Custom Mapcrafter binary:</string>
              </property>
@@ -166,7 +166,7 @@
            <item row="0" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
-              <widget class="QLineEdit" name="customMapcrafterBinary">
+              <widget class="QLineEdit" name="mapcrafterBinary">
                <property name="enabled">
                 <bool>false</bool>
                </property>
@@ -280,9 +280,9 @@
  <resources/>
  <connections>
   <connection>
-   <sender>customMapcrafterBinaryEnabled</sender>
+   <sender>customMapcrafterBinary</sender>
    <signal>toggled(bool)</signal>
-   <receiver>customMapcrafterBinary</receiver>
+   <receiver>mapcrafterBinary</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -296,7 +296,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>customMapcrafterBinaryEnabled</sender>
+   <sender>customMapcrafterBinary</sender>
    <signal>toggled(bool)</signal>
    <receiver>pushButton</receiver>
    <slot>setEnabled(bool)</slot>

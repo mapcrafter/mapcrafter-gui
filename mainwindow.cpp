@@ -54,8 +54,8 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     updateRecentFiles();
 
-    connect(ui->customMapcrafterBinaryEnabled, SIGNAL(toggled(bool)), this, SLOT(updateMapcrafterCommand()));
-    connect(ui->customMapcrafterBinary, SIGNAL(textChanged(QString)), this, SLOT(updateMapcrafterCommand()));
+    connect(ui->customMapcrafterBinary, SIGNAL(toggled(bool)), this, SLOT(updateMapcrafterCommand()));
+    connect(ui->mapcrafterBinary, SIGNAL(textChanged(QString)), this, SLOT(updateMapcrafterCommand()));
     connect(ui->threads, SIGNAL(valueChanged(int)), this, SLOT(updateMapcrafterCommand()));
     connect(ui->mapsSkipAll, SIGNAL(toggled(bool)), this, SLOT(updateMapcrafterCommand()));
     connect(ui->mapsSkip, SIGNAL(textChanged(QString)), this, SLOT(updateMapcrafterCommand()));
@@ -163,14 +163,15 @@ void MainWindow::about()
     QMessageBox::information(this, "About", stream.str().c_str());
 }
 
-void MainWindow::updateMapcrafterCommand() {
+void MainWindow::updateMapcrafterCommand()
+{
     QString mapcrafter;
-    if (ui->customMapcrafterBinaryEnabled->isChecked()) {
-        mapcrafter = ui->customMapcrafterBinary->text();
+    if (ui->customMapcrafterBinary->isChecked()) {
+        mapcrafter = ui->mapcrafterBinary->text();
     } else {
         fs::path mapcrafterDir = mapcrafter::util::findExecutableMapcrafterDir();
         mapcrafter = QString::fromStdString((mapcrafterDir / "mapcrafter").string());
-        ui->customMapcrafterBinary->setText(mapcrafter);
+        ui->mapcrafterBinary->setText(mapcrafter);
     }
 
     if (currentFile.isEmpty() || mapcrafter.isEmpty()) {
@@ -305,6 +306,12 @@ void MainWindow::readSettings()
     restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
     restoreState(settings.value("MainWindow/windowState").toByteArray());
     ui->splitter->restoreState(settings.value("MainWindow/splitterState").toByteArray());
+
+    if (settings.contains("mapcrafterBinary")) {
+        ui->customMapcrafterBinary->setChecked(true);
+        ui->mapcrafterBinary->setText(settings.value("mapcrafterBinary").toString());
+        updateMapcrafterCommand();
+    }
 }
 
 void MainWindow::writeSettings()
@@ -314,6 +321,12 @@ void MainWindow::writeSettings()
     settings.setValue("MainWindow/geometry", saveGeometry());
     settings.setValue("MainWindow/windowState", saveState());
     settings.setValue("MainWindow/splitterState", ui->splitter->saveState());
+
+    if (ui->customMapcrafterBinary->isChecked()) {
+        settings.setValue("mapcrafterBinary", ui->mapcrafterBinary->text());
+    } else {
+        settings.remove("mapcrafterBinary");
+    }
 }
 
 const int MainWindow::MAX_RECENT_FILES;
