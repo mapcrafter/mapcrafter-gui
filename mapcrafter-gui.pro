@@ -20,8 +20,8 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
-LIBS += -L ../mapcrafter/src/mapcraftercore -l mapcraftercore 
-INCLUDEPATH += ../mapcrafter/src
+LIBS += -L ../src/mapcraftercore -l mapcraftercore 
+INCLUDEPATH += ../src
 
 win32 {
 	LIBS += -l boost-system-mt -l boost-filesystem-mt
