@@ -53,6 +53,15 @@ MainWindow::MainWindow(QWidget *parent) :
         connect(recentFileActions[i], SIGNAL(triggered()), this, SLOT(openRecentFile()));
     }
     updateRecentFiles();
+
+    connect(ui->customMapcrafterBinaryEnabled, SIGNAL(toggled(bool)), this, SLOT(updateMapcrafterCommand()));
+    connect(ui->customMapcrafterBinary, SIGNAL(textChanged(QString)), this, SLOT(updateMapcrafterCommand()));
+    connect(ui->threads, SIGNAL(valueChanged(int)), this, SLOT(updateMapcrafterCommand()));
+    connect(ui->mapsSkipAll, SIGNAL(toggled(bool)), this, SLOT(updateMapcrafterCommand()));
+    connect(ui->mapsSkip, SIGNAL(textChanged(QString)), this, SLOT(updateMapcrafterCommand()));
+    connect(ui->mapsAuto, SIGNAL(textChanged(QString)), this, SLOT(updateMapcrafterCommand()));
+    connect(ui->mapsForce, SIGNAL(textChanged(QString)), this, SLOT(updateMapcrafterCommand()));
+    updateMapcrafterCommand();
 }
 
 MainWindow::~MainWindow()
@@ -154,6 +163,40 @@ void MainWindow::about()
     QMessageBox::information(this, "About", stream.str().c_str());
 }
 
+void MainWindow::updateMapcrafterCommand() {
+    QString mapcrafter;
+    if (ui->customMapcrafterBinaryEnabled->isChecked()) {
+        mapcrafter = ui->customMapcrafterBinary->text();
+    } else {
+        fs::path mapcrafterDir = mapcrafter::util::findExecutableMapcrafterDir();
+        mapcrafter = QString::fromStdString((mapcrafterDir / "mapcrafter").string());
+        ui->customMapcrafterBinary->setText(mapcrafter);
+    }
+
+    if (currentFile.isEmpty() || mapcrafter.isEmpty()) {
+        ui->mapcrafterCommand->setText("");
+        return;
+    }
+
+    QStringList args;
+    args << "\"" + mapcrafter + "\"";
+    args << "-c" << "\"" + currentFile + "\"";
+    args << "-j" << QString::number(ui->threads->value());
+
+    if (ui->mapsSkipAll->isChecked()) {
+        args << "-r";
+    } else if (!ui->mapsSkip->text().isEmpty()) {
+        args << "-s" << ui->mapsSkip->text();
+    }
+
+    if (!ui->mapsAuto->text().isEmpty())
+        args << "-a" << ui->mapsAuto->text();
+    if (!ui->mapsForce->text().isEmpty())
+        args << "-f" << ui->mapsForce->text();
+
+    ui->mapcrafterCommand->setText(args.join(" "));
+}
+
 void MainWindow::handleTextChanged()
 {
     setCurrentFile(currentFile, true);
@@ -236,6 +279,7 @@ void MainWindow::setCurrentFile(const QString &filename, bool dirty)
         recentFiles.removeLast();
     settings.setValue("recentFiles", recentFiles);
     updateRecentFiles();
+    updateMapcrafterCommand();
 }
 
 void MainWindow::updateRecentFiles()

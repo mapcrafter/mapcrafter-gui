@@ -24,6 +24,7 @@ public slots:
     void save();
     void saveAs();
     void about();
+    void updateMapcrafterCommand();
 
     void handleTextChanged();
 
