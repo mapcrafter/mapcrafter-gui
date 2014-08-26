@@ -19,7 +19,9 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
-MAPCRAFTER_DIR = ../mapcrafter
+!defined(MAPCRAFTER_DIR, var) {
+	MAPCRAFTER_DIR = ../mapcrafter
+}
 
 LIBS += -L $${MAPCRAFTER_DIR}/src/mapcraftercore -lmapcraftercore 
 INCLUDEPATH += $${MAPCRAFTER_DIR}/src
