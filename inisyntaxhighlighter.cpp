@@ -26,8 +26,8 @@ void INISyntaxHighlighter::highlightBlock(const QString& text) {
                 mid = line.size();
             setFormat(startIndex, startIndex + mid + 1, keyFormat);
 
-            QString key = line.mid(0, mid);
-            QString value = line.mid(mid+1);
+            QString key = line.mid(0, mid).trimmed();
+            QString value = line.mid(mid+1).trimmed();
 
             bool isNum;
             value.toDouble(&isNum);

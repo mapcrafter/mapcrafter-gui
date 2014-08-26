@@ -19,7 +19,8 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
-!defined(MAPCRAFTER_DIR, var) {
+MAPCRAFTER_DIR = $$(MAPCRAFTER_DIR)
+equals(MAPCRAFTER_DIR, "") {
 	MAPCRAFTER_DIR = ../mapcrafter
 }
 
