@@ -13,10 +13,10 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp mainwindow.cpp \
-    validationwidget.cpp
+    validationwidget.cpp inisyntaxhighlighter.cpp
 
 HEADERS  += mainwindow.h \
-    validationwidget.h
+    validationwidget.h inisyntaxhighlighter.h
 
 FORMS    += mainwindow.ui
 
