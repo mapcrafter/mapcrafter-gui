@@ -11,7 +11,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = mapcrafter-gui
 TEMPLATE = app
 
-
 SOURCES += main.cpp mainwindow.cpp \
     validationwidget.cpp inisyntaxhighlighter.cpp
 
@@ -20,13 +19,15 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
-LIBS += -L ../src/mapcraftercore -l mapcraftercore 
-INCLUDEPATH += ../src
+MAPCRAFTER_DIR = ../mapcrafter
+
+LIBS += -L $${MAPCRAFTER_DIR}/src/mapcraftercore -lmapcraftercore 
+INCLUDEPATH += $${MAPCRAFTER_DIR}/src
 
 win32 {
-	LIBS += -l boost_system-mt -l boost_filesystem-mt
-#	LIBS += -L ../lib/boost_1_54_0/stage/lib -l boost_system-mgw49-mt-1_54 -l boost_filesystem-mgw49-mt-1_54
-#	INCLUDEPATH += ../lib/boost_1_54_0
+	LIBS += -lboost_system-mt -lboost_filesystem-mt
+} else {
+	LIBS += -lboost_system -lboost_filesystem
 }
 
 QMAKE_CXXFLAGS += -std=c++0x
