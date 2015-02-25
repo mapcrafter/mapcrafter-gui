@@ -239,7 +239,7 @@ void MainWindow::handleValidateConfig()
 
     renderer::RenderOpts opts;
     opts.batch = true;
-    opts.jobs = 2;
+    opts.jobs = ui->threadCount->value();
     manager = new renderer::RenderManager(config, opts);
     manager->initialize();
 
