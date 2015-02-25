@@ -51,6 +51,7 @@ void RenderWorker::renderMaps() {
     for (auto map_it = required_maps.begin(); map_it != required_maps.end(); ++map_it)
         progress1_max += map_it->second.size();
     emit progress1MaxChanged(progress1_max);
+    emit progress1ValueChanged(progress1_value);
 
     QtObjectProgressHandler* qt_progress = new QtObjectProgressHandler();
     connect(qt_progress, SIGNAL(maxChanged(int)), this, SLOT(handleProgress2MaxChanged(int)));
@@ -58,7 +59,6 @@ void RenderWorker::renderMaps() {
     util::Logging::getInstance().setSinkLogProgress("__output__", true);
 
     for (auto map_it = required_maps.begin(); map_it != required_maps.end(); ++map_it) {
-        emit progress1ValueChanged(progress1_value++);
 
         config::MapSection map_config = config.getMap(map_it->first);
 
@@ -67,6 +67,7 @@ void RenderWorker::renderMaps() {
         auto required_rotations = map_it->second;
         for (auto rotation_it = required_rotations.begin();
                 rotation_it != required_rotations.end(); ++rotation_it) {
+            emit progress1ValueChanged(progress1_value++);
             LOG(INFO) << "Rendering rotation " << *rotation_it << " of map '" << map_it->first << "'.";
 
             util::MultiplexingProgressHandler progress;
@@ -80,6 +81,7 @@ void RenderWorker::renderMaps() {
         }
     }
 
+    emit progress1ValueChanged(progress1_max);
     emit renderMapsFinished();
 }
 
