@@ -72,6 +72,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->buttonRender, SIGNAL(clicked()), this, SLOT(handleRender()));
     connect(this, SIGNAL(startRendering()), worker, SLOT(scanWorlds()));
     connect(worker, SIGNAL(scanWorldsFinished()), worker, SLOT(renderMaps()));
+    connect(worker, SIGNAL(renderMapsFinished()), this, SLOT(handleRenderFinished()));
     connect(worker, SIGNAL(progress1MaxChanged(int)), ui->progress1, SLOT(setMaximum(int)));
     connect(worker, SIGNAL(progress1ValueChanged(int)), ui->progress1, SLOT(setValue(int)));
     connect(worker, SIGNAL(progress2MaxChanged(int)), ui->progress2, SLOT(setMaximum(int)));
@@ -229,29 +230,37 @@ void MainWindow::handleValidateConfig()
         QMessageBox::information(this, "Configuration validation", "Validation successful.");
     } else if (validation.isCritical()) {
         QMessageBox::critical(this, "Configuration validation", "Validation not successful.");
-        return;
     } else {
         QMessageBox::warning(this, "Configuration validation", "Validation successful, but some minor problems appeared.");
     }
-
-    if (manager)
-        delete manager;
-
-    renderer::RenderOpts opts;
-    opts.batch = true;
-    opts.jobs = ui->threadCount->value();
-    manager = new renderer::RenderManager(config, opts);
-    manager->initialize();
-
-    worker->setConfig(config);
-    worker->setRenderManager(manager);
 }
 
 void MainWindow::handleRender()
 {
-    LOG(INFO) << "handleRender()";
+    if (manager)
+        delete manager;
+    manager = new renderer::RenderManager(config);
+    manager->initialize();
+    manager->setThreadCount(ui->inputThreadCount->value());
     manager->setRenderBehaviors(renderer::RenderBehaviorMap(renderer::RenderBehavior::FORCE));
+
+    worker->setConfig(config);
+    worker->setRenderManager(manager);
     emit startRendering();
+
+    ui->labelRenderBehaviors->setEnabled(false);
+    ui->inputRenderBehaviors->setEnabled(false);
+    ui->labelThreadCount->setEnabled(false);
+    ui->inputThreadCount->setEnabled(false);
+    ui->buttonRender->setEnabled(false);
+}
+
+void MainWindow::handleRenderFinished() {
+    ui->labelRenderBehaviors->setEnabled(true);
+    ui->inputRenderBehaviors->setEnabled(true);
+    ui->labelThreadCount->setEnabled(true);
+    ui->inputThreadCount->setEnabled(true);
+    ui->buttonRender->setEnabled(true);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

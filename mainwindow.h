@@ -41,6 +41,7 @@ public slots:
 
     void handleValidateConfig();
     void handleRender();
+    void handleRenderFinished();
 
 protected:
     void closeEvent(QCloseEvent *event);

@@ -17,6 +17,9 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QTabWidget" name="tabWidget_2">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="currentIndex">
        <number>0</number>
       </property>
@@ -63,19 +66,22 @@
        </layout>
       </widget>
       <widget class="QWidget" name="tab_2">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <attribute name="title">
         <string>Rendering</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_7">
         <item>
-         <widget class="QLabel" name="label_6">
+         <widget class="QLabel" name="labelRenderBehaviors">
           <property name="text">
            <string>Maps to render:</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="MapSelectionWidget" name="mapSelectionWidget">
+         <widget class="MapSelectionWidget" name="inputRenderBehaviors">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
             <horstretch>0</horstretch>
@@ -112,14 +118,14 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
-           <widget class="QLabel" name="label_7">
+           <widget class="QLabel" name="labelThreadCount">
             <property name="text">
              <string>Threads to use:</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="threadCount">
+           <widget class="QSpinBox" name="inputThreadCount">
             <property name="minimum">
              <number>1</number>
             </property>
