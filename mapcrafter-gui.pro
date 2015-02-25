@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
+CONFIG += qt debug
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -12,10 +13,16 @@ TARGET = mapcrafter-gui
 TEMPLATE = app
 
 SOURCES += main.cpp mainwindow.cpp \
-    validationwidget.cpp inisyntaxhighlighter.cpp
+    validationwidget.cpp inisyntaxhighlighter.cpp \
+    logwidget.cpp \
+    mapselectionwidget.cpp \
+    renderworker.cpp
 
 HEADERS  += mainwindow.h \
-    validationwidget.h inisyntaxhighlighter.h
+    validationwidget.h inisyntaxhighlighter.h \
+    logwidget.h \
+    mapselectionwidget.h \
+    renderworker.h
 
 FORMS    += mainwindow.ui
 

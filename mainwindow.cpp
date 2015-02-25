@@ -23,7 +23,8 @@ namespace fs = boost::filesystem;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    currentFile(""), currentFileDirty(false)
+    currentFile(""), currentFileDirty(false),
+    manager(NULL)
 {
     ui->setupUi(this);
 
@@ -64,6 +65,17 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->mapsAuto, SIGNAL(textChanged(QString)), this, SLOT(updateMapcrafterCommand()));
     connect(ui->mapsForce, SIGNAL(textChanged(QString)), this, SLOT(updateMapcrafterCommand()));
     updateMapcrafterCommand();
+
+    worker = new RenderWorker();
+    worker->moveToThread(&thread);
+    thread.start();
+    connect(ui->buttonRender, SIGNAL(clicked()), this, SLOT(handleRender()));
+    connect(this, SIGNAL(startRendering()), worker, SLOT(scanWorlds()));
+    connect(worker, SIGNAL(scanWorldsFinished()), worker, SLOT(renderMaps()));
+    connect(worker, SIGNAL(progress1MaxChanged(int)), ui->progress1, SLOT(setMaximum(int)));
+    connect(worker, SIGNAL(progress1ValueChanged(int)), ui->progress1, SLOT(setValue(int)));
+    connect(worker, SIGNAL(progress2MaxChanged(int)), ui->progress2, SLOT(setMaximum(int)));
+    connect(worker, SIGNAL(progress2ValueChanged(int)), ui->progress2, SLOT(setValue(int)));
 }
 
 MainWindow::~MainWindow()
@@ -207,18 +219,39 @@ void MainWindow::handleTextChanged()
 
 void MainWindow::handleValidateConfig()
 {
-    mapcrafter::config::MapcrafterConfig config;
-    mapcrafter::config::ValidationMap validation = config.parse(currentFile.toStdString());
+    config = config::MapcrafterConfig();
+    config::ValidationMap validation = config.parse(currentFile.toStdString());
     validation.log();
 
     ui->validationWidget->setValidation(validation);
 
-    if (validation.isEmpty())
+    if (validation.isEmpty()) {
         QMessageBox::information(this, "Configuration validation", "Validation successful.");
-    else if (validation.isCritical())
+    } else if (validation.isCritical()) {
         QMessageBox::critical(this, "Configuration validation", "Validation not successful.");
-    else
+        return;
+    } else {
         QMessageBox::warning(this, "Configuration validation", "Validation successful, but some minor problems appeared.");
+    }
+
+    if (manager)
+        delete manager;
+
+    renderer::RenderOpts opts;
+    opts.batch = true;
+    opts.jobs = 2;
+    manager = new renderer::RenderManager(config, opts);
+    manager->initialize();
+
+    worker->setConfig(config);
+    worker->setRenderManager(manager);
+}
+
+void MainWindow::handleRender()
+{
+    LOG(INFO) << "handleRender()";
+    manager->setRenderBehaviors(renderer::RenderBehaviorMap(renderer::RenderBehavior::FORCE));
+    emit startRendering();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
