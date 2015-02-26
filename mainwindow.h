@@ -41,6 +41,8 @@ public slots:
 
     void handleValidateConfig();
 
+    void handleTabChanged(int tab);
+
     void handleSetRenderBehaviorsTo();
     void handleRender();
     void handleRenderFinished();
@@ -54,11 +56,16 @@ private:
     void setCurrentFile(const QString& filename, bool dirty = false);
     void updateRecentFiles();
 
+    // returns 0 if config is ok, 1 if there are warnings, 2 if there is an error
+    int validateConfig();
+
     void readSettings();
     void writeSettings();
 
     Ui::MainWindow *ui;
 
+    int currentTab;
+    bool currentlyRendering;
     QString currentFile;
     bool currentFileDirty;
 

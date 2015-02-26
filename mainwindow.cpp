@@ -23,7 +23,7 @@ namespace fs = boost::filesystem;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    currentFile(""), currentFileDirty(false),
+    currentTab(0), currentlyRendering(false), currentFile(""), currentFileDirty(false),
     manager(NULL)
 {
     ui->setupUi(this);
@@ -31,20 +31,12 @@ MainWindow::MainWindow(QWidget *parent) :
     readSettings();
     setCurrentFile("", false);
 
-    QFont font("Monospace");
-    font.setStyleHint(QFont::TypeWriter);
-    ui->textEdit->setFont(font);
-    INISyntaxHighlighter* highlighter = new INISyntaxHighlighter(ui->textEdit->document());
-
+    // configure file menu
     connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(newFile()));
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(open()));
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(save()));
     connect(ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(saveAs()));
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
-
-    connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(handleTextChanged()));
-
-    connect(ui->buttonValidateConfig, SIGNAL(clicked()), this, SLOT(handleValidateConfig()));
 
     recentFilesSeparator = new QAction(this);
     recentFilesSeparator->setSeparator(true);
@@ -57,15 +49,19 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     updateRecentFiles();
 
-    connect(ui->customMapcrafterBinary, SIGNAL(toggled(bool)), this, SLOT(updateMapcrafterCommand()));
-    connect(ui->mapcrafterBinary, SIGNAL(textChanged(QString)), this, SLOT(updateMapcrafterCommand()));
-    connect(ui->threads, SIGNAL(valueChanged(int)), this, SLOT(updateMapcrafterCommand()));
-    connect(ui->mapsSkipAll, SIGNAL(toggled(bool)), this, SLOT(updateMapcrafterCommand()));
-    connect(ui->mapsSkip, SIGNAL(textChanged(QString)), this, SLOT(updateMapcrafterCommand()));
-    connect(ui->mapsAuto, SIGNAL(textChanged(QString)), this, SLOT(updateMapcrafterCommand()));
-    connect(ui->mapsForce, SIGNAL(textChanged(QString)), this, SLOT(updateMapcrafterCommand()));
-    updateMapcrafterCommand();
+    // configure config file tab
+    QFont font("Monospace");
+    font.setStyleHint(QFont::TypeWriter);
+    ui->textEdit->setFont(font);
+    INISyntaxHighlighter* highlighter = new INISyntaxHighlighter(ui->textEdit->document());
 
+    connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(handleTextChanged()));
+    connect(ui->buttonValidateConfig, SIGNAL(clicked()), this, SLOT(handleValidateConfig()));
+
+    // configure tab widget
+    connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(handleTabChanged(int)));
+
+    // configure rendering tab
     QMenu* menu = new QMenu(this);
     QAction* action1 = new QAction("auto", this);
     QAction* action2 = new QAction("force", this);
@@ -90,6 +86,16 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(worker, SIGNAL(progress1ValueChanged(int)), ui->progress1, SLOT(setValue(int)));
     connect(worker, SIGNAL(progress2MaxChanged(int)), ui->progress2, SLOT(setMaximum(int)));
     connect(worker, SIGNAL(progress2ValueChanged(int)), ui->progress2, SLOT(setValue(int)));
+
+    // configure command line rendering tab
+    connect(ui->customMapcrafterBinary, SIGNAL(toggled(bool)), this, SLOT(updateMapcrafterCommand()));
+    connect(ui->mapcrafterBinary, SIGNAL(textChanged(QString)), this, SLOT(updateMapcrafterCommand()));
+    connect(ui->threads, SIGNAL(valueChanged(int)), this, SLOT(updateMapcrafterCommand()));
+    connect(ui->mapsSkipAll, SIGNAL(toggled(bool)), this, SLOT(updateMapcrafterCommand()));
+    connect(ui->mapsSkip, SIGNAL(textChanged(QString)), this, SLOT(updateMapcrafterCommand()));
+    connect(ui->mapsAuto, SIGNAL(textChanged(QString)), this, SLOT(updateMapcrafterCommand()));
+    connect(ui->mapsForce, SIGNAL(textChanged(QString)), this, SLOT(updateMapcrafterCommand()));
+    updateMapcrafterCommand();
 }
 
 MainWindow::~MainWindow()
@@ -116,19 +122,28 @@ void MainWindow::newFile() {
 
 void MainWindow::open()
 {
+    // TODO handle this differently
+    if (currentlyRendering) {
+        QMessageBox::critical(this, "TODO", "Not allowed at the moment!");
+        return;
+    }
+
     QString filename = QFileDialog::getOpenFileName(this);
     if(filename.isEmpty())
         return;
     loadFile(filename);
-    ui->tabWidget->setCurrentIndex(0);
 }
 
 void MainWindow::openRecentFile() {
-    QAction* action = qobject_cast<QAction*>(sender());
-    if (action) {
-        loadFile(action->data().toString());
-        ui->tabWidget->setCurrentIndex(0);
+    // TODO handle this differently
+    if (currentlyRendering) {
+        QMessageBox::critical(this, "TODO", "Not allowed at the moment!");
+        return;
     }
+
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action)
+        loadFile(action->data().toString());
 }
 
 void MainWindow::save()
@@ -236,22 +251,53 @@ void MainWindow::handleTextChanged()
 
 void MainWindow::handleValidateConfig()
 {
-    config = config::MapcrafterConfig();
-    config::ValidationMap validation = config.parse(currentFile.toStdString());
-    validation.log();
+    // TODO validate config file as you edit it in the text field
+    int status = validateConfig();
+    // TODO output message?
 
-    ui->validationWidget->setValidation(validation);
-
-    if (validation.isEmpty()) {
+    /*
+    if (status == 0) {
         QMessageBox::information(this, "Configuration validation", "Validation successful.");
-    } else if (validation.isCritical()) {
+    } else if (status == 1) {
+        QMessageBox::warning(this, "Configuration validation", "Validation successful, but some minor problems appeared.");
+    } else {
         QMessageBox::critical(this, "Configuration validation", "Validation not successful.");
         return;
-    } else {
-        QMessageBox::warning(this, "Configuration validation", "Validation successful, but some minor problems appeared.");
+    }
+    */
+}
+
+void MainWindow::handleTabChanged(int tab) {
+    // make sure config is valid when switching to rendering tab
+    if (currentTab != 1 && tab == 1) {
+        int status = validateConfig();
+        if (status == 1) {
+            QMessageBox dialog(this);
+            dialog.setWindowTitle("Configuration validation");
+            dialog.setIcon(QMessageBox::Warning);
+            dialog.setText("There are warnings about your configuration file. Do still you want to proceed to render your map(s)?");
+            dialog.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            dialog.setDefaultButton(QMessageBox::Yes);
+            int result = dialog.exec();
+            if (result == QMessageBox::No) {
+                ui->tabWidget->setCurrentIndex(0);
+                return;
+            }
+        } else if (status == 2) {
+            QMessageBox::critical(this, "Configuration validation", "You have to fix the errors in your configuration file before you can proceed to render your map(s).");
+            ui->tabWidget->setCurrentIndex(0);
+            return;
+        }
     }
 
-    ui->inputRenderBehaviors->setRenderBehaviors(renderer::RenderBehaviorMap(renderer::RenderBehavior::AUTO), config);
+    // TODO handle this differently
+    if (currentTab == 1 && tab != 1 && currentlyRendering) {
+        QMessageBox::critical(this, "TODO", "Can't change the tab while rendering!");
+        ui->tabWidget->setCurrentIndex(1);
+        return;
+    }
+
+    currentTab = tab;
 }
 
 void MainWindow::handleSetRenderBehaviorsTo() {
@@ -272,6 +318,7 @@ void MainWindow::handleRender()
 {
     if (manager)
         delete manager;
+    currentlyRendering = true;
     manager = new renderer::RenderManager(config);
     manager->initialize();
     manager->setThreadCount(ui->inputThreadCount->value());
@@ -282,6 +329,7 @@ void MainWindow::handleRender()
     emit startRendering();
 
     ui->labelRenderBehaviors->setEnabled(false);
+    ui->buttonSetAllRenderBehaviorsTo->setEnabled(false);
     ui->inputRenderBehaviors->setEnabled(false);
     ui->labelThreadCount->setEnabled(false);
     ui->inputThreadCount->setEnabled(false);
@@ -289,7 +337,9 @@ void MainWindow::handleRender()
 }
 
 void MainWindow::handleRenderFinished() {
+    currentlyRendering = false;
     ui->labelRenderBehaviors->setEnabled(true);
+    ui->buttonSetAllRenderBehaviorsTo->setEnabled(true);
     ui->inputRenderBehaviors->setEnabled(true);
     ui->labelThreadCount->setEnabled(true);
     ui->inputThreadCount->setEnabled(true);
@@ -327,6 +377,11 @@ void MainWindow::loadFile(const QString& filename)
     file.close();
 
     setCurrentFile(filename, false);
+
+    int status = validateConfig();
+    // goto rendering tab to config tab if config file contains errors
+    if (status == 2 && ui->tabWidget->currentIndex() == 1)
+        ui->tabWidget->setCurrentIndex(0);
 }
 
 void MainWindow::saveFile(const QString& filename)
@@ -379,6 +434,23 @@ void MainWindow::updateRecentFiles()
     for (int j = numRecentFiles; j < MAX_RECENT_FILES; j++)
         recentFileActions[j]->setVisible(false);
     recentFilesSeparator->setVisible(numRecentFiles != 0);
+}
+
+int MainWindow::validateConfig() {
+    config = config::MapcrafterConfig();
+    config::ValidationMap validation = config.parse(currentFile.toStdString());
+    //validation.log();
+
+    ui->validationWidget->setValidation(validation);
+    ui->inputRenderBehaviors->setRenderBehaviors(renderer::RenderBehaviorMap(renderer::RenderBehavior::AUTO), config);
+
+    if (validation.isEmpty()) {
+        return 0;
+    } else if (validation.isCritical()) {
+        return 2;
+    } else {
+        return 1;
+    }
 }
 
 void MainWindow::readSettings()
