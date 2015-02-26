@@ -15,14 +15,14 @@ TEMPLATE = app
 SOURCES += main.cpp mainwindow.cpp \
     validationwidget.cpp inisyntaxhighlighter.cpp \
     logwidget.cpp \
-    mapselectionwidget.cpp \
-    renderworker.cpp
+    renderworker.cpp \
+    renderbehaviorswidget.cpp
 
 HEADERS  += mainwindow.h \
     validationwidget.h inisyntaxhighlighter.h \
     logwidget.h \
-    mapselectionwidget.h \
-    renderworker.h
+    renderworker.h \
+    renderbehaviorswidget.h
 
 FORMS    += mainwindow.ui
 

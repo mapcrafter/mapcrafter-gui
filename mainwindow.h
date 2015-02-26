@@ -40,6 +40,8 @@ public slots:
     void handleTextChanged();
 
     void handleValidateConfig();
+
+    void handleSetRenderBehaviorsTo();
     void handleRender();
     void handleRenderFinished();
 

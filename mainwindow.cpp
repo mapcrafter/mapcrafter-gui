@@ -66,6 +66,19 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->mapsForce, SIGNAL(textChanged(QString)), this, SLOT(updateMapcrafterCommand()));
     updateMapcrafterCommand();
 
+    QMenu* menu = new QMenu(this);
+    QAction* action1 = new QAction("auto", this);
+    QAction* action2 = new QAction("force", this);
+    QAction* action3 = new QAction("skip", this);
+    connect(action1, SIGNAL(triggered()), this, SLOT(handleSetRenderBehaviorsTo()));
+    connect(action2, SIGNAL(triggered()), this, SLOT(handleSetRenderBehaviorsTo()));
+    connect(action3, SIGNAL(triggered()), this, SLOT(handleSetRenderBehaviorsTo()));
+    menu->addAction(action1);
+    menu->addAction(action2);
+    menu->addAction(action3);
+    ui->buttonSetAllRenderBehaviorsTo->setMenu(menu);
+    ui->buttonSetAllRenderBehaviorsTo->setPopupMode(QToolButton::InstantPopup);
+
     worker = new RenderWorker();
     worker->moveToThread(&thread);
     thread.start();
@@ -230,8 +243,26 @@ void MainWindow::handleValidateConfig()
         QMessageBox::information(this, "Configuration validation", "Validation successful.");
     } else if (validation.isCritical()) {
         QMessageBox::critical(this, "Configuration validation", "Validation not successful.");
+        return;
     } else {
         QMessageBox::warning(this, "Configuration validation", "Validation successful, but some minor problems appeared.");
+    }
+
+    ui->inputRenderBehaviors->setRenderBehaviors(renderer::RenderBehaviorMap(renderer::RenderBehavior::AUTO), config);
+}
+
+void MainWindow::handleSetRenderBehaviorsTo() {
+    QObject* sender = QObject::sender();
+    QAction* action = dynamic_cast<QAction*>(sender);
+    if (action != nullptr) {
+        renderer::RenderBehavior behavior = renderer::RenderBehavior::AUTO;
+        if (action->text() == "force")
+            behavior = renderer::RenderBehavior::FORCE;
+        else if (action->text() == "skip")
+            behavior = renderer::RenderBehavior::SKIP;
+        else if (action->text() != "auto")
+            return;
+        ui->inputRenderBehaviors->setRenderBehaviors(renderer::RenderBehaviorMap(behavior), config);
     }
 }
 
@@ -242,7 +273,7 @@ void MainWindow::handleRender()
     manager = new renderer::RenderManager(config);
     manager->initialize();
     manager->setThreadCount(ui->inputThreadCount->value());
-    manager->setRenderBehaviors(renderer::RenderBehaviorMap(renderer::RenderBehavior::FORCE));
+    manager->setRenderBehaviors(ui->inputRenderBehaviors->getRenderBehaviors());
 
     worker->setConfig(config);
     worker->setRenderManager(manager);
@@ -261,6 +292,11 @@ void MainWindow::handleRenderFinished() {
     ui->labelThreadCount->setEnabled(true);
     ui->inputThreadCount->setEnabled(true);
     ui->buttonRender->setEnabled(true);
+
+    ui->progress1->setMaximum(1);
+    ui->progress1->setValue(0);
+    ui->progress2->setMaximum(1);
+    ui->progress2->setValue(0);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

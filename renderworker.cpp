@@ -59,7 +59,6 @@ void RenderWorker::renderMaps() {
     util::Logging::getInstance().setSinkLogProgress("__output__", true);
 
     for (auto map_it = required_maps.begin(); map_it != required_maps.end(); ++map_it) {
-
         config::MapSection map_config = config.getMap(map_it->first);
 
         manager->initializeMap(map_it->first);

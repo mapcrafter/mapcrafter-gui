@@ -16,12 +16,12 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QTabWidget" name="tabWidget_2">
+     <widget class="QTabWidget" name="tabWidget">
       <property name="enabled">
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_1">
        <attribute name="title">
@@ -74,45 +74,44 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_7">
         <item>
-         <widget class="QLabel" name="labelRenderBehaviors">
-          <property name="text">
-           <string>Maps to render:</string>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QLabel" name="labelRenderBehaviors">
+            <property name="text">
+             <string>Maps to render:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QToolButton" name="buttonSetAllRenderBehaviorsTo">
+            <property name="text">
+             <string>Set all to...</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
-         <widget class="MapSelectionWidget" name="inputRenderBehaviors">
+         <widget class="RenderBehaviorsWidget" name="inputRenderBehaviors">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <column>
-           <property name="text">
-            <string>Map</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>tl</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>tr</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>br</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>bl</string>
-           </property>
-          </column>
          </widget>
         </item>
         <item>
@@ -420,9 +419,9 @@
    <header>logwidget.h</header>
   </customwidget>
   <customwidget>
-   <class>MapSelectionWidget</class>
+   <class>RenderBehaviorsWidget</class>
    <extends>QTreeWidget</extends>
-   <header>mapselectionwidget.h</header>
+   <header>renderbehaviorswidget.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
