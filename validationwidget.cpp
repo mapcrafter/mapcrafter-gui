@@ -3,6 +3,7 @@
 ValidationWidget::ValidationWidget(QWidget *parent) :
     QTreeWidget(parent)
 {
+    setHeaderHidden(true);
 }
 
 void ValidationWidget::setValidation(const mapcrafter::config::ValidationMap& validation)

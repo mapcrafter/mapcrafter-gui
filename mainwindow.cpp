@@ -56,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
     INISyntaxHighlighter* highlighter = new INISyntaxHighlighter(ui->textEdit->document());
 
     connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(handleTextChanged()));
-    connect(ui->buttonValidateConfig, SIGNAL(clicked()), this, SLOT(handleValidateConfig()));
+    connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(validateConfig()));
 
     // configure tab widget
     connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(handleTabChanged(int)));
@@ -209,6 +209,26 @@ void MainWindow::about()
     QMessageBox::information(this, "About", stream.str().c_str());
 }
 
+int MainWindow::validateConfig() {
+    std::string configText = ui->textEdit->document()->toPlainText().toStdString();
+    fs::path configDir = fs::path(currentFile.toStdString()).parent_path();
+
+    config = config::MapcrafterConfig();
+    config::ValidationMap validation = config.parseString(configText, configDir);
+    //validation.log();
+
+    ui->validationWidget->setValidation(validation);
+    ui->inputRenderBehaviors->setRenderBehaviors(renderer::RenderBehaviorMap(renderer::RenderBehavior::AUTO), config);
+
+    if (validation.isEmpty()) {
+        return 0;
+    } else if (validation.isCritical()) {
+        return 2;
+    } else {
+        return 1;
+    }
+}
+
 void MainWindow::updateMapcrafterCommand()
 {
     QString mapcrafter;
@@ -247,24 +267,6 @@ void MainWindow::updateMapcrafterCommand()
 void MainWindow::handleTextChanged()
 {
     setCurrentFile(currentFile, true);
-}
-
-void MainWindow::handleValidateConfig()
-{
-    // TODO validate config file as you edit it in the text field
-    int status = validateConfig();
-    // TODO output message?
-
-    /*
-    if (status == 0) {
-        QMessageBox::information(this, "Configuration validation", "Validation successful.");
-    } else if (status == 1) {
-        QMessageBox::warning(this, "Configuration validation", "Validation successful, but some minor problems appeared.");
-    } else {
-        QMessageBox::critical(this, "Configuration validation", "Validation not successful.");
-        return;
-    }
-    */
 }
 
 void MainWindow::handleTabChanged(int tab) {
@@ -434,23 +436,6 @@ void MainWindow::updateRecentFiles()
     for (int j = numRecentFiles; j < MAX_RECENT_FILES; j++)
         recentFileActions[j]->setVisible(false);
     recentFilesSeparator->setVisible(numRecentFiles != 0);
-}
-
-int MainWindow::validateConfig() {
-    config = config::MapcrafterConfig();
-    config::ValidationMap validation = config.parse(currentFile.toStdString());
-    //validation.log();
-
-    ui->validationWidget->setValidation(validation);
-    ui->inputRenderBehaviors->setRenderBehaviors(renderer::RenderBehaviorMap(renderer::RenderBehavior::AUTO), config);
-
-    if (validation.isEmpty()) {
-        return 0;
-    } else if (validation.isCritical()) {
-        return 2;
-    } else {
-        return 1;
-    }
 }
 
 void MainWindow::readSettings()

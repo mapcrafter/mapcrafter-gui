@@ -21,7 +21,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tabConfigFile">
        <property name="enabled">
@@ -44,23 +44,7 @@
           <widget class="QWidget" name="verticalLayoutWidget">
            <layout class="QVBoxLayout" name="verticalLayout_2">
             <item>
-             <widget class="QPushButton" name="buttonValidateConfig">
-              <property name="text">
-               <string>Validate configuration</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="ValidationWidget" name="validationWidget">
-              <attribute name="headerVisible">
-               <bool>false</bool>
-              </attribute>
-              <column>
-               <property name="text">
-                <string notr="true">1</string>
-               </property>
-              </column>
-             </widget>
+             <widget class="ValidationWidget" name="validationWidget"/>
             </item>
            </layout>
           </widget>
@@ -115,6 +99,11 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <column>
+           <property name="text">
+            <string>Map</string>
+           </property>
+          </column>
          </widget>
         </item>
         <item>

@@ -35,11 +35,13 @@ public slots:
     void save();
     void saveAs();
     void about();
+
+    // returns 0 if config is ok, 1 if there are warnings, 2 if there is an error
+    int validateConfig();
+
     void updateMapcrafterCommand();
 
     void handleTextChanged();
-
-    void handleValidateConfig();
 
     void handleTabChanged(int tab);
 
@@ -56,8 +58,6 @@ private:
     void setCurrentFile(const QString& filename, bool dirty = false);
     void updateRecentFiles();
 
-    // returns 0 if config is ok, 1 if there are warnings, 2 if there is an error
-    int validateConfig();
 
     void readSettings();
     void writeSettings();

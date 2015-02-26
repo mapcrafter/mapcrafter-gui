@@ -7,6 +7,7 @@ RenderBehaviorsWidget::RenderBehaviorsWidget(QWidget* parent)
     QStringList labels;
     labels << "Map" << "tl" << "tr" << "br" << "bl";
     setHeaderLabels(labels);
+    setColumnCount(labels.size());
     header()->setStretchLastSection(false);
     header()->setResizeMode(0, QHeaderView::Stretch);
 
