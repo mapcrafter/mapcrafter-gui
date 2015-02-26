@@ -120,12 +120,15 @@ void MainWindow::open()
     if(filename.isEmpty())
         return;
     loadFile(filename);
+    ui->tabWidget->setCurrentIndex(0);
 }
 
 void MainWindow::openRecentFile() {
     QAction* action = qobject_cast<QAction*>(sender());
-    if (action)
+    if (action) {
         loadFile(action->data().toString());
+        ui->tabWidget->setCurrentIndex(0);
+    }
 }
 
 void MainWindow::save()
@@ -252,8 +255,7 @@ void MainWindow::handleValidateConfig()
 }
 
 void MainWindow::handleSetRenderBehaviorsTo() {
-    QObject* sender = QObject::sender();
-    QAction* action = dynamic_cast<QAction*>(sender);
+    QAction* action = qobject_cast<QAction*>(sender());
     if (action != nullptr) {
         renderer::RenderBehavior behavior = renderer::RenderBehavior::AUTO;
         if (action->text() == "force")
