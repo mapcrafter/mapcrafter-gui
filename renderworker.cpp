@@ -4,22 +4,26 @@
 
 void QtObjectProgressHandler::setMax(int max) {
     emit maxChanged(max);
-    DummyProgressHandler::setMax(max);
+    AbstractOutputProgressHandler::setMax(max);
 }
 
 void QtObjectProgressHandler::setValue(int value) {
     emit valueChanged(value);
-    DummyProgressHandler::setValue(value);
+    AbstractOutputProgressHandler::setValue(value);
 }
 
-RenderWorker::RenderWorker(QObject *parent) : QObject(parent)
-{
+void QtObjectProgressHandler::update(double percentage, double average_speed, int eta) {
+    emit statsChanged(percentage, average_speed, eta);
+}
 
+RenderWorker::RenderWorker(QObject *parent)
+    : QObject(parent), qt_progress(new QtObjectProgressHandler())
+{
 }
 
 RenderWorker::~RenderWorker()
 {
-
+    delete qt_progress;
 }
 
 void RenderWorker::setConfig(const config::MapcrafterConfig& config) {
@@ -33,11 +37,13 @@ void RenderWorker::setRenderManager(renderer::RenderManager* manager) {
 void RenderWorker::scanWorlds() {
     assert(manager);
 
-    emit progress1MaxChanged(0);
+    emit labelMapsProgressChanged("Scanning worlds...");
+    emit progressMapsMaxChanged(0);
     LOG(INFO) << "Scanning worlds...";
     manager->scanWorlds();
-    emit progress1MaxChanged(1);
-    emit progress1ValueChanged(0);
+    emit labelMapsProgressChanged("Finished scanning worlds.");
+    emit progressMapsMaxChanged(1);
+    emit progressMapsValueChanged(0);
     emit scanWorldsFinished();
 }
 
@@ -50,12 +56,9 @@ void RenderWorker::renderMaps() {
     int progress1_value = 0;
     for (auto map_it = required_maps.begin(); map_it != required_maps.end(); ++map_it)
         progress1_max += map_it->second.size();
-    emit progress1MaxChanged(progress1_max);
-    emit progress1ValueChanged(progress1_value);
+    emit progressMapsMaxChanged(progress1_max);
+    emit progressMapsValueChanged(progress1_value);
 
-    QtObjectProgressHandler* qt_progress = new QtObjectProgressHandler();
-    connect(qt_progress, SIGNAL(maxChanged(int)), this, SLOT(handleProgress2MaxChanged(int)));
-    connect(qt_progress, SIGNAL(valueChanged(int)), this, SLOT(handleProgress2ValueChanged(int)));
     util::Logging::getInstance().setSinkLogProgress("__output__", true);
 
     for (auto map_it = required_maps.begin(); map_it != required_maps.end(); ++map_it) {
@@ -66,8 +69,14 @@ void RenderWorker::renderMaps() {
         auto required_rotations = map_it->second;
         for (auto rotation_it = required_rotations.begin();
                 rotation_it != required_rotations.end(); ++rotation_it) {
-            emit progress1ValueChanged(progress1_value++);
+            emit labelMapsProgressChanged(QString("Map '%1' - Rotation %2").arg(QString::fromStdString(map_it->first)).arg(*rotation_it));
+            emit progressMapsValueChanged(progress1_value++);
             LOG(INFO) << "Rendering rotation " << *rotation_it << " of map '" << map_it->first << "'.";
+
+            qt_progress = new QtObjectProgressHandler();
+            connect(qt_progress, SIGNAL(maxChanged(int)), this, SLOT(handleTilesProgressMaxChanged(int)));
+            connect(qt_progress, SIGNAL(valueChanged(int)), this, SLOT(handleTilesProgressValueChanged(int)));
+            connect(qt_progress, SIGNAL(statsChanged(double, double, int)), this, SLOT(handleTilesProgressStatsChanged(double, double, int)));
 
             util::MultiplexingProgressHandler progress;
             util::LogOutputProgressHandler* log_output = new util::LogOutputProgressHandler();
@@ -76,18 +85,32 @@ void RenderWorker::renderMaps() {
             manager->renderMap(map_config.getShortName(), *rotation_it, &progress);
 
             delete log_output;
+            delete qt_progress;
 
         }
     }
 
-    emit progress1ValueChanged(progress1_max);
+    emit progressMapsValueChanged(progress1_max);
     emit renderMapsFinished();
 }
 
-void RenderWorker::handleProgress2MaxChanged(int max) {
-    emit progress2MaxChanged(max);
+void RenderWorker::handleTilesProgressMaxChanged(int max) {
+    if (!qt_progress)
+        return;
+    emit labelTilesProgressLeftChanged(QString("%1 of %2 tiles rendered").arg(qt_progress->getValue()).arg(qt_progress->getMax()));
+    emit progressTilesMaxChanged(max);
 }
 
-void RenderWorker::handleProgress2ValueChanged(int value) {
-    emit progress2ValueChanged(value);
+void RenderWorker::handleTilesProgressValueChanged(int value) {
+    if (!qt_progress)
+        return;
+    emit labelTilesProgressLeftChanged(QString("%1 of %2 tiles rendered").arg(qt_progress->getValue()).arg(qt_progress->getMax()));
+    emit progressTilesValueChanged(value);
+}
+
+void RenderWorker::handleTilesProgressStatsChanged(double percentage, double average_speed, int eta) {
+    if (!qt_progress)
+        return;
+    emit labelTilesProgressCenterChanged(QString("%1 tiles/s").arg(QString::number(average_speed, 'f', 1)));
+    emit labelTilesProgressRightChanged(QString("ETA: %1").arg(QString::fromStdString(util::format_eta(eta))));
 }

@@ -82,10 +82,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(startRendering()), worker, SLOT(scanWorlds()));
     connect(worker, SIGNAL(scanWorldsFinished()), worker, SLOT(renderMaps()));
     connect(worker, SIGNAL(renderMapsFinished()), this, SLOT(handleRenderFinished()));
-    connect(worker, SIGNAL(progress1MaxChanged(int)), ui->progress1, SLOT(setMaximum(int)));
-    connect(worker, SIGNAL(progress1ValueChanged(int)), ui->progress1, SLOT(setValue(int)));
-    connect(worker, SIGNAL(progress2MaxChanged(int)), ui->progress2, SLOT(setMaximum(int)));
-    connect(worker, SIGNAL(progress2ValueChanged(int)), ui->progress2, SLOT(setValue(int)));
+    connect(worker, SIGNAL(labelMapsProgressChanged(QString)), ui->labelMapsProgress, SLOT(setText(QString)));
+    connect(worker, SIGNAL(progressMapsMaxChanged(int)), ui->progressMaps, SLOT(setMaximum(int)));
+    connect(worker, SIGNAL(progressMapsValueChanged(int)), ui->progressMaps, SLOT(setValue(int)));
+    connect(worker, SIGNAL(labelTilesProgressLeftChanged(QString)), ui->labelTilesProgressLeft, SLOT(setText(QString)));
+    connect(worker, SIGNAL(labelTilesProgressCenterChanged(QString)), ui->labelTilesProgressCenter, SLOT(setText(QString)));
+    connect(worker, SIGNAL(labelTilesProgressRightChanged(QString)), ui->labelTilesProgressRight, SLOT(setText(QString)));
+    connect(worker, SIGNAL(progressTilesMaxChanged(int)), ui->progressTiles, SLOT(setMaximum(int)));
+    connect(worker, SIGNAL(progressTilesValueChanged(int)), ui->progressTiles, SLOT(setValue(int)));
 
     // configure command line rendering tab
     connect(ui->customMapcrafterBinary, SIGNAL(toggled(bool)), this, SLOT(updateMapcrafterCommand()));
@@ -122,9 +126,9 @@ void MainWindow::newFile() {
 
 void MainWindow::open()
 {
-    // TODO handle this differently
+    // TODO handle this differently?
     if (currentlyRendering) {
-        QMessageBox::critical(this, "TODO", "Not allowed at the moment!");
+        QMessageBox::critical(this, "Open file", "Please wait until rendering is finished.");
         return;
     }
 
@@ -135,9 +139,9 @@ void MainWindow::open()
 }
 
 void MainWindow::openRecentFile() {
-    // TODO handle this differently
+    // TODO handle this differently?
     if (currentlyRendering) {
-        QMessageBox::critical(this, "TODO", "Not allowed at the moment!");
+        QMessageBox::critical(this, "Open file", "Please wait until rendering is finished.");
         return;
     }
 
@@ -294,7 +298,7 @@ void MainWindow::handleTabChanged(int tab) {
 
     // TODO handle this differently
     if (currentTab == 1 && tab != 1 && currentlyRendering) {
-        QMessageBox::critical(this, "TODO", "Can't change the tab while rendering!");
+        QMessageBox::critical(this, "TODO", "Please wait until rendering is finished.");
         ui->tabWidget->setCurrentIndex(1);
         return;
     }
@@ -347,10 +351,15 @@ void MainWindow::handleRenderFinished() {
     ui->inputThreadCount->setEnabled(true);
     ui->buttonRender->setEnabled(true);
 
-    ui->progress1->setMaximum(1);
-    ui->progress1->setValue(0);
-    ui->progress2->setMaximum(1);
-    ui->progress2->setValue(0);
+    ui->labelMapsProgress->setText("-");
+    ui->progressMaps->setMaximum(1);
+    ui->progressMaps->setValue(0);
+
+    ui->labelTilesProgressLeft->setText("-");
+    ui->labelTilesProgressCenter->setText("");
+    ui->labelTilesProgressRight->setText("");
+    ui->progressTiles->setMaximum(1);
+    ui->progressTiles->setValue(0);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
