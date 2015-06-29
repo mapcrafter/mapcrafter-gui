@@ -18,9 +18,9 @@ class RenderBehaviorsWidget : public QTreeWidget {
 public:
     explicit RenderBehaviorsWidget(QWidget* parent = 0);
 
-    void setRenderBehaviors(const renderer::RenderBehaviorMap& behaviors,
+    void setRenderBehaviors(const renderer::RenderBehaviors& behaviors,
                             const config::MapcrafterConfig& config);
-    renderer::RenderBehaviorMap getRenderBehaviors() const;
+    renderer::RenderBehaviors getRenderBehaviors() const;
 
 protected:
     std::map<std::string, std::array<QComboBox, 4> > combo_boxes;

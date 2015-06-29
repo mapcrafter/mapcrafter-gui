@@ -14,7 +14,7 @@ RenderBehaviorsWidget::RenderBehaviorsWidget(QWidget* parent)
     setSelectionMode(SelectionMode::NoSelection);
 }
 
-void RenderBehaviorsWidget::setRenderBehaviors(const renderer::RenderBehaviorMap& behaviors,
+void RenderBehaviorsWidget::setRenderBehaviors(const renderer::RenderBehaviors& behaviors,
                                                const config::MapcrafterConfig& config) {
     clear();
     combo_boxes.clear();
@@ -44,8 +44,8 @@ void RenderBehaviorsWidget::setRenderBehaviors(const renderer::RenderBehaviorMap
     }
 }
 
-renderer::RenderBehaviorMap RenderBehaviorsWidget::getRenderBehaviors() const {
-    renderer::RenderBehaviorMap render_behaviors;
+renderer::RenderBehaviors RenderBehaviorsWidget::getRenderBehaviors() const {
+    renderer::RenderBehaviors render_behaviors;
     for (auto it = combo_boxes.begin(); it != combo_boxes.end(); ++it) {
         std::string map = it->first;
         for (int rotation = 0; rotation < 4; rotation++) {

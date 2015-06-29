@@ -17,7 +17,7 @@ void QtObjectProgressHandler::update(double percentage, double average_speed, in
 }
 
 RenderWorker::RenderWorker(QObject *parent)
-    : QObject(parent), qt_progress(new QtObjectProgressHandler())
+    : QObject(parent), thread_count(1), qt_progress(new QtObjectProgressHandler())
 {
 }
 
@@ -32,6 +32,10 @@ void RenderWorker::setConfig(const config::MapcrafterConfig& config) {
 
 void RenderWorker::setRenderManager(renderer::RenderManager* manager) {
     this->manager = manager;
+}
+
+void RenderWorker::setThreadCount(int thread_count) {
+    this->thread_count = thread_count;
 }
 
 void RenderWorker::scanWorlds() {
@@ -64,8 +68,6 @@ void RenderWorker::renderMaps() {
     for (auto map_it = required_maps.begin(); map_it != required_maps.end(); ++map_it) {
         config::MapSection map_config = config.getMap(map_it->first);
 
-        manager->initializeMap(map_it->first);
-
         auto required_rotations = map_it->second;
         for (auto rotation_it = required_rotations.begin();
                 rotation_it != required_rotations.end(); ++rotation_it) {
@@ -82,11 +84,10 @@ void RenderWorker::renderMaps() {
             util::LogOutputProgressHandler* log_output = new util::LogOutputProgressHandler();
             progress.addHandler(log_output);
             progress.addHandler(qt_progress);
-            manager->renderMap(map_config.getShortName(), *rotation_it, &progress);
+            manager->renderMap(map_config.getShortName(), *rotation_it, thread_count, &progress);
 
             delete log_output;
             delete qt_progress;
-
         }
     }
 

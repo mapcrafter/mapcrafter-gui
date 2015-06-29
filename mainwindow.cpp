@@ -222,7 +222,7 @@ int MainWindow::validateConfig() {
     //validation.log();
 
     ui->validationWidget->setValidation(validation);
-    ui->inputRenderBehaviors->setRenderBehaviors(renderer::RenderBehaviorMap(renderer::RenderBehavior::AUTO), config);
+    ui->inputRenderBehaviors->setRenderBehaviors(renderer::RenderBehaviors(renderer::RenderBehavior::AUTO), config);
 
     if (validation.isEmpty()) {
         return 0;
@@ -316,7 +316,7 @@ void MainWindow::handleSetRenderBehaviorsTo() {
             behavior = renderer::RenderBehavior::SKIP;
         else if (action->text() != "auto")
             return;
-        ui->inputRenderBehaviors->setRenderBehaviors(renderer::RenderBehaviorMap(behavior), config);
+        ui->inputRenderBehaviors->setRenderBehaviors(renderer::RenderBehaviors(behavior), config);
     }
 }
 
@@ -327,11 +327,11 @@ void MainWindow::handleRender()
     currentlyRendering = true;
     manager = new renderer::RenderManager(config);
     manager->initialize();
-    manager->setThreadCount(ui->inputThreadCount->value());
     manager->setRenderBehaviors(ui->inputRenderBehaviors->getRenderBehaviors());
 
     worker->setConfig(config);
     worker->setRenderManager(manager);
+    worker->setThreadCount(ui->inputThreadCount->value()); 
     emit startRendering();
 
     ui->labelRenderBehaviors->setEnabled(false);

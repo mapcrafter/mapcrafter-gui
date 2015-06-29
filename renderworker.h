@@ -33,6 +33,7 @@ public:
 
     void setConfig(const config::MapcrafterConfig& config);
     void setRenderManager(renderer::RenderManager* manager);
+    void setThreadCount(int thread_count);
 
 signals:
     void scanWorldsFinished();
@@ -61,6 +62,7 @@ protected slots:
 protected:
     config::MapcrafterConfig config;
     renderer::RenderManager* manager;
+    int thread_count;
 
     QtObjectProgressHandler* qt_progress;
 };
