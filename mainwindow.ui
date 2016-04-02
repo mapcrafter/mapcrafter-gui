@@ -246,7 +246,7 @@
         <item>
          <widget class="QLabel" name="label">
           <property name="text">
-           <string>At the moment there is no full Mapcrafter integration in this graphical user interface, but you can run the following command in a terminal to render your map(s):</string>
+           <string>If you want to render your map(s) outside of this GUI, you can run the following command in a terminal:</string>
           </property>
           <property name="wordWrap">
            <bool>true</bool>
