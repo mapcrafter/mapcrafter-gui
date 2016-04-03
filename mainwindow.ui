@@ -286,7 +286,7 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="0">
+          <item row="6" column="0">
            <widget class="QLabel" name="label_4">
             <property name="text">
              <string>Maps to force-render:</string>
@@ -299,7 +299,7 @@
           <item row="4" column="1">
            <widget class="QLineEdit" name="mapsAuto"/>
           </item>
-          <item row="5" column="1">
+          <item row="6" column="1">
            <widget class="QLineEdit" name="mapsForce"/>
           </item>
           <item row="1" column="0">
@@ -361,6 +361,13 @@
             </item>
            </layout>
           </item>
+          <item row="5" column="0">
+           <widget class="QCheckBox" name="mapsForceAll">
+            <property name="text">
+             <string>Force-render all maps</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
         <item>
@@ -388,7 +395,7 @@
      <x>0</x>
      <y>0</y>
      <width>801</width>
-     <height>27</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -464,7 +471,9 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>textEdit</tabstop>
+  <tabstop>buttonSetAllRenderBehaviorsTo</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>mapcrafterCommand</tabstop>
   <tabstop>customMapcrafterBinary</tabstop>
   <tabstop>mapcrafterBinary</tabstop>
   <tabstop>pushButton</tabstop>
@@ -472,7 +481,14 @@
   <tabstop>mapsSkipAll</tabstop>
   <tabstop>mapsSkip</tabstop>
   <tabstop>mapsAuto</tabstop>
+  <tabstop>mapsForceAll</tabstop>
   <tabstop>mapsForce</tabstop>
+  <tabstop>inputRenderBehaviors</tabstop>
+  <tabstop>inputThreadCount</tabstop>
+  <tabstop>buttonRender</tabstop>
+  <tabstop>logWidget</tabstop>
+  <tabstop>textEdit</tabstop>
+  <tabstop>validationWidget</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -483,12 +499,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>80</x>
-     <y>357</y>
+     <x>92</x>
+     <y>131</y>
     </hint>
     <hint type="destinationlabel">
-     <x>494</x>
-     <y>363</y>
+     <x>692</x>
+     <y>134</y>
     </hint>
    </hints>
   </connection>
@@ -499,12 +515,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>109</x>
-     <y>357</y>
+     <x>121</x>
+     <y>131</y>
     </hint>
     <hint type="destinationlabel">
      <x>778</x>
-     <y>363</y>
+     <y>134</y>
     </hint>
    </hints>
   </connection>
@@ -515,12 +531,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>101</x>
-     <y>427</y>
+     <x>113</x>
+     <y>192</y>
     </hint>
     <hint type="destinationlabel">
-     <x>476</x>
-     <y>460</y>
+     <x>684</x>
+     <y>220</y>
     </hint>
    </hints>
   </connection>
@@ -531,12 +547,44 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>79</x>
-     <y>427</y>
+     <x>91</x>
+     <y>192</y>
     </hint>
     <hint type="destinationlabel">
-     <x>85</x>
-     <y>460</y>
+     <x>97</x>
+     <y>220</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mapsForceAll</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mapsForce</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>28</x>
+     <y>262</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>283</x>
+     <y>293</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mapsForceAll</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>label_4</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>63</x>
+     <y>263</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>58</x>
+     <y>292</y>
     </hint>
    </hints>
   </connection>

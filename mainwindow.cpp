@@ -99,6 +99,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->mapsSkip, SIGNAL(textChanged(QString)), this, SLOT(updateMapcrafterCommand()));
     connect(ui->mapsAuto, SIGNAL(textChanged(QString)), this, SLOT(updateMapcrafterCommand()));
     connect(ui->mapsForce, SIGNAL(textChanged(QString)), this, SLOT(updateMapcrafterCommand()));
+    connect(ui->mapsForceAll, SIGNAL(toggled(bool)), this, SLOT(updateMapcrafterCommand()));
     updateMapcrafterCommand();
 }
 
@@ -262,8 +263,12 @@ void MainWindow::updateMapcrafterCommand()
 
     if (!ui->mapsAuto->text().isEmpty())
         args << "-a" << ui->mapsAuto->text();
-    if (!ui->mapsForce->text().isEmpty())
+
+    if (ui->mapsForceAll->isChecked()) {
+        args << "-F";
+    } else if (!ui->mapsForce->text().isEmpty()) {
         args << "-f" << ui->mapsForce->text();
+    }
 
     ui->mapcrafterCommand->setText(args.join(" "));
 }
