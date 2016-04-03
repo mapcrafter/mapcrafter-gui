@@ -13,11 +13,13 @@ LogWidget::LogWidget(QWidget* parent)
     util::Logging::getInstance().setSink("__qtobject__", sink);
     connect(sink, SIGNAL(gotMessage(util::LogMessage)), this, SLOT(addLogMessage(util::LogMessage)));
 
+    /*
     LOG(INFO) << "Test info";
     LOG(NOTICE) << "Test notice";
     LOG(WARNING) << "Test warning";
     LOG(ERROR) << "Test error";
     LOG(EMERGENCY) << "Holy shit what's happening?!";
+    */
 }
 
 void LogWidget::addLogMessage(const util::LogMessage& message) {
