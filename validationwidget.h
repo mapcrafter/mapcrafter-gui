@@ -1,7 +1,7 @@
 #ifndef VALIDATIONWIDGET_H
 #define VALIDATIONWIDGET_H
 
-#include <mapcraftercore-legacy/config/validation.h>
+#include <mapcraftercore/config/validation.h>
 
 #include <QTreeWidget>
 

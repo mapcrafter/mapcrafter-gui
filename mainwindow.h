@@ -3,8 +3,8 @@
 
 #include "renderworker.h"
 
-#include <mapcraftercore-legacy/config/mapcrafterconfig.h>
-#include <mapcraftercore-legacy/renderer/manager.h>
+#include <mapcraftercore/config/mapcrafterconfig.h>
+#include <mapcraftercore/renderer/manager.h>
 
 #include <QtCore/QThread>
 #include <QCloseEvent>

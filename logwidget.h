@@ -1,7 +1,7 @@
 #ifndef LOGWIDGET_H
 #define LOGWIDGET_H
 
-#include <mapcraftercore-legacy/util.h>
+#include <mapcraftercore/util.h>
 #include <QtCore/QObject>
 #include <QtCore/QMetaType>
 #include <QtGui/QTreeWidget>

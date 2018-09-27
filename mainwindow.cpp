@@ -2,8 +2,8 @@
 #include "ui_mainwindow.h"
 #include "inisyntaxhighlighter.h"
 
-#include <mapcraftercore-legacy/version.h>
-#include <mapcraftercore-legacy/config/mapcrafterconfig.h>
+#include <mapcraftercore/version.h>
+#include <mapcraftercore/config/mapcrafterconfig.h>
 
 #include <sstream>
 #include <QDebug>

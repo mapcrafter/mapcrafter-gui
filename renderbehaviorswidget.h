@@ -1,9 +1,9 @@
 #ifndef RENDERBEHAVIORSWIDGET_H
 #define RENDERBEHAVIORSWIDGET_H
 
-#include <mapcraftercore-legacy/config/configsections/map.h>
-#include <mapcraftercore-legacy/config/mapcrafterconfig.h>
-#include <mapcraftercore-legacy/renderer/manager.h>
+#include <mapcraftercore/config/configsections/map.h>
+#include <mapcraftercore/config/mapcrafterconfig.h>
+#include <mapcraftercore/renderer/manager.h>
 
 #include <QtGui/QComboBox>
 #include <QtGui/QTreeWidget>
