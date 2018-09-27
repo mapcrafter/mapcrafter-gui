@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 
-#include <mapcraftercore/util.h>
+#include <mapcraftercore-legacy/util.h>
 
 #include <QCoreApplication>
 #include <QApplication>

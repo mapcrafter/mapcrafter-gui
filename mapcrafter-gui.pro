@@ -31,7 +31,7 @@ equals(MAPCRAFTER_DIR, "") {
 	MAPCRAFTER_DIR = ../mapcrafter
 }
 
-LIBS += -L $${MAPCRAFTER_DIR}/src/mapcraftercore -lmapcraftercore 
+LIBS += -L $${MAPCRAFTER_DIR}/src/mapcraftercore -lmapcraftercore-legacy 
 INCLUDEPATH += $${MAPCRAFTER_DIR}/src
 
 win32 {

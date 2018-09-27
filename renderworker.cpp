@@ -1,6 +1,6 @@
 #include "renderworker.h"
 
-#include <mapcraftercore/util.h>
+#include <mapcraftercore-legacy/util.h>
 
 void QtObjectProgressHandler::setMax(int max) {
     emit maxChanged(max);
