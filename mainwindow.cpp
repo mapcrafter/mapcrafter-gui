@@ -196,14 +196,6 @@ void MainWindow::about()
         stream << "<li>Nothing found.</li>";
     stream << "</ol>";
 
-    mapcrafter::util::PathList textures = mapcrafter::util::findTextureDirs(mapcrafter_bin);
-    stream << "<b>Texture directories:</b><ol>";
-    for (size_t i = 0; i < textures.size(); i++)
-        stream << "<li>" << BOOST_FS_ABSOLUTE1(textures[i]).string().c_str() << "</li>";
-    if (textures.size() == 0)
-        stream << "<li>Nothing found.</li>";
-    stream << "</ol>";
-
     mapcrafter::util::PathList configs = mapcrafter::util::findLoggingConfigFiles(mapcrafter_bin);
     stream << "<b>Logging configuration file:</b><ol>";
     for (size_t i = 0; i < configs.size(); i++)
